@@ -1,50 +1,138 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+- Version change: (template) → 1.0.0
+- Modified principles: none (first ratification; all placeholders replaced)
+- Added principles:
+  - I. Design Fidelity
+  - II. Single Source of Data Types
+  - III. Untrusted Feedback Content (NON-NEGOTIABLE)
+  - IV. Simplicity
+  - V. Small, Prop-Driven Components
+  - VI. Tested Logic and Components
+- Added sections: Technology & Project Constraints; Development Workflow & Quality Gates;
+  Governance
+- Removed sections: none
+- Templates checked (not modified by this command; they read the constitution at runtime):
+  - .specify/templates/plan-template.md ✅ "Constitution Check" gate applies as-is
+  - .specify/templates/spec-template.md ✅ no conflict
+  - .specify/templates/tasks-template.md ✅ no conflict; test tasks required by Principle VI
+- Follow-up TODOs: none
+-->
+
+# Keep Constitution
+
+Keep is a feedback tool. Users submit feedback through an embeddable widget; the team reviews
+and handles it in an admin dashboard. The code lives in the `feedback` monorepo:
+
+- `apps/admin` – admin dashboard (Next.js App Router)
+- `apps/demo-site` – test page for the widget
+- `packages/widget` – embeddable script
+- `convex` – backend
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Design Fidelity
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+- UI MUST follow the Figma design referenced in each spec, whether provided as screenshots or
+  via the Figma MCP.
+- Colors, spacing, radii and typography MUST come from the tokens and classes in
+  `apps/admin/app/globals.css`. New colors, spacing values or type styles MUST NOT be invented.
+- If a design needs a value that `globals.css` lacks, the value MUST be taken from Figma and
+  added to `globals.css` as a token in the same change, never hard-coded in a component.
+- Figma governs visual design. UI copy MUST be in Danish (see Technology & Project
+  Constraints), even where a Figma frame shows English text.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+**Rationale**: One visual source of truth keeps the product consistent and makes design changes
+a single-file edit.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### II. Single Source of Data Types
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+- Shared data types (feedback, users, platforms, statuses, attachments, etc.) MUST be defined in
+  exactly one module in `apps/admin`, and MUST mirror the planned Convex schema.
+- Duplicate or ad-hoc type definitions for the same entity MUST NOT exist elsewhere.
+- Once `convex/schema.ts` exists, code MUST use Convex-generated types
+  (`convex/_generated/dataModel`) and the handwritten equivalents MUST be removed.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+**Rationale**: Types that mirror the schema from day one make the move from mock data to Convex
+a swap, not a rewrite.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### III. Untrusted Feedback Content (NON-NEGOTIABLE)
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+- All feedback content (text, names, emails, page paths, file names, metadata) comes from
+  untrusted users and MUST be rendered as text only.
+- `dangerouslySetInnerHTML` MUST NOT be used anywhere. In `packages/widget` and any non-React
+  code, `innerHTML`, `outerHTML`, `insertAdjacentHTML` and `document.write` MUST NOT be used with
+  user-supplied data; use `textContent` or DOM APIs instead.
+- User-supplied URLs MUST be checked to use `http:` or `https:` before being used in `href` or
+  `src`.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+**Rationale**: The admin dashboard displays content written by anyone who can load the widget;
+rendering it as HTML would expose admins to stored XSS.
+
+### IV. Simplicity
+
+- Solutions MUST be the simplest that meet the spec. No speculative abstractions or features.
+- New dependencies MUST NOT be added unless the plan states a clear reason and why existing
+  tools (the platform, Next.js, Convex, Tailwind) are not enough.
+
+**Rationale**: A small dependency footprint keeps the codebase easy to understand, upgrade and
+secure.
+
+### V. Small, Prop-Driven Components
+
+- Components MUST be small, focused and reusable.
+- Components MUST receive their data via props and MUST NOT import mock data or fetch data
+  themselves. Data loading belongs in pages/containers.
+- Replacing mock data with Convex queries MUST NOT require changing a presentational component.
+
+**Rationale**: Separating data from presentation lets the UI be built against mock data now and
+connected to Convex later without rewrites.
+
+### VI. Tested Logic and Components
+
+- New logic and new components MUST have Vitest tests in the same change.
+- Tests MUST cover the behavior described in the spec's acceptance scenarios, including the
+  text-only rendering required by Principle III where user content is displayed.
+
+**Rationale**: Tests written alongside the code are what make later refactors (such as the
+Convex swap) safe.
+
+## Technology & Project Constraints
+
+- **Language**: TypeScript with `strict` mode enabled in every package. `any` MUST NOT be used
+  to silence type errors.
+- **Package manager**: npm only. Lockfiles from other package managers MUST NOT be committed.
+- **Testing**: Vitest (sanctioned by Principle VI; no separate justification needed).
+- **Styling**: Tailwind CSS v4 plus the tokens and component classes in
+  `apps/admin/app/globals.css` (Principle I).
+- **Next.js**: `apps/admin` uses a recent Next.js version with breaking changes. Before writing
+  Next.js code, read the relevant guide in `apps/admin/node_modules/next/dist/docs/`, as
+  required by `apps/admin/AGENTS.md`.
+- **UI language**: All user-facing text MUST be in Danish. Code, identifiers and comments are in
+  English.
+
+## Development Workflow & Quality Gates
+
+- Features follow the Spec Kit flow: `/speckit-specify` → `/speckit-plan` → `/speckit-tasks`
+  → `/speckit-implement`.
+- Each spec MUST reference the Figma design (screenshot or Figma link) for any UI it
+  introduces.
+- Each plan MUST pass the Constitution Check against all six principles, and MUST list any new
+  dependency with its justification (Principle IV).
+- Before a change is considered done: `npm run lint`, type checking (`tsc --noEmit` or
+  `next build`) and the Vitest suite MUST pass in every affected package.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+- This constitution supersedes other practices and conventions in the repository. Where a spec,
+  plan or task conflicts with it, the constitution wins.
+- Amendments are made with `/speckit-constitution`, MUST update the Sync Impact Report and
+  version line, and MUST be committed separately from feature work.
+- Versioning follows semantic versioning: MAJOR for removing or redefining a principle, MINOR
+  for adding a principle or section or materially expanding guidance, PATCH for clarifications
+  and wording.
+- Every plan's Constitution Check and every review MUST verify compliance. A deviation MUST be
+  recorded in the plan's Complexity Tracking table with its justification, or it is not allowed.
+- Runtime development guidance for the admin app lives in `apps/admin/AGENTS.md`.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-11-17 | **Last Amended**: 2026-11-17
