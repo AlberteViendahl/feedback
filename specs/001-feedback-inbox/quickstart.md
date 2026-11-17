@@ -32,6 +32,7 @@ Expected: no lint errors, no type errors, all tests green. The test suite covers
 | `lib/inbox/state` | select marks read and resets draft; send sets reply + Done; send blocked when draft blank or reply exists; issue sets In progress (Done stays Done); issue only once | FR-011, FR-017, FR-018, FR-022 |
 | `lib/inbox/select` | every status × category × sort combination returns the expected tickets; counts follow the category; hidden selection returns `null` | FR-008–FR-010, SC-003 |
 | `lib/inbox/format` | relative-time table from research R3 with a fixed `now`; Danish dates; size, duration, ticket number, page path | FR-002, FR-013, FR-015, FR-016 |
+| `lib/inbox/use-now` | minute-rounded time in the browser, `null` on the server, updates every minute, timer cleared on unmount | FR-002, research R2 |
 | `lib/inbox/safe-url` | `http:`/`https:` accepted; `javascript:`, `data:`, relative and malformed values rejected | FR-016 |
 | Components | rows show icon, preview, sender, platform, page, attachment count, badge; markup in a description renders as literal text; empty states; sent reply shown read-only | US1, US2, FR-019, SC-006 |
 | Keyboard | Tab reaches rows, switch, filter, sort, textarea and actions; Enter/Space opens a ticket and triggers actions | FR-024, SC-008 |

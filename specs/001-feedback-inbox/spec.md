@@ -169,8 +169,8 @@ confirmation and the resulting ticket status.
   but the status stays Done.
 - A ticket is Done but no reply has been sent for it (e.g. in the mock data): the reply field
   and "send" are still available; availability depends only on whether a reply exists.
-- The "Done" filter is active and the admin sends a reply on a ticket: the ticket now matches
-  the filter and appears in the list.
+- A category filter is active and the admin sends a reply on a ticket in that category: the
+  "Færdig" count for that category goes up by one immediately.
 
 ## Requirements *(mandatory)*
 
@@ -209,8 +209,9 @@ confirmation and the resulting ticket status.
 **Ticket details**
 
 - **FR-011**: Clicking a ticket MUST open it in the right panel and mark it as opened.
-- **FR-012**: The panel header MUST show the category label with its icon and the ticket number
-  (e.g. "#FB-1042").
+- **FR-012**: The panel header MUST show the category label and the ticket number (e.g.
+  "#FB-1042"). The label includes the small category icon where the design provides one (only
+  Fejl today); Forslag and Generel feedback show the label only until icons are designed.
 - **FR-013**: The panel MUST show the sender's initial (as an avatar), name, email, company,
   plan and the date and time the feedback was sent.
 - **FR-014**: The panel MUST show the full description, preserving the sender's line breaks.
@@ -305,3 +306,5 @@ confirmation and the resulting ticket status.
 - Admin authentication and permissions are out of scope; anyone who can open the admin app can
   use the inbox.
 - The design is for desktop screens; small-screen layouts are out of scope for this feature.
+- The design has no small icons for Forslag and Generel feedback; adding them is a design task
+  outside this feature.
