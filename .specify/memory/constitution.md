@@ -1,16 +1,13 @@
 <!--
 Sync Impact Report
-- Version change: (template) → 1.0.0
-- Modified principles: none (first ratification; all placeholders replaced)
-- Added principles:
-  - I. Design Fidelity
-  - II. Single Source of Data Types
-  - III. Untrusted Feedback Content (NON-NEGOTIABLE)
-  - IV. Simplicity
-  - V. Small, Prop-Driven Components
-  - VI. Tested Logic and Components
-- Added sections: Technology & Project Constraints; Development Workflow & Quality Gates;
-  Governance
+- Version change: 1.0.0 → 1.1.0 (MINOR: materially expanded guidance)
+- Modified principles:
+  - VI. Tested Logic and Components (title unchanged): component tests now use Testing
+    Library (@testing-library/react) on jsdom
+- Modified sections:
+  - Technology & Project Constraints: Testing is now Vitest + Testing Library + jsdom
+  - Development Workflow & Quality Gates: `/speckit-clarify` added after `/speckit-specify`
+- Added sections: none
 - Removed sections: none
 - Templates checked (not modified by this command; they read the constitution at runtime):
   - .specify/templates/plan-template.md ✅ "Constitution Check" gate applies as-is
@@ -90,7 +87,8 @@ connected to Convex later without rewrites.
 
 ### VI. Tested Logic and Components
 
-- New logic and new components MUST have Vitest tests in the same change.
+- New logic and new components MUST have tests in the same change: Vitest for logic, and
+  Vitest with Testing Library (`@testing-library/react`) on jsdom for components.
 - Tests MUST cover the behavior described in the spec's acceptance scenarios, including the
   text-only rendering required by Principle III where user content is displayed.
 
@@ -102,7 +100,8 @@ Convex swap) safe.
 - **Language**: TypeScript with `strict` mode enabled in every package. `any` MUST NOT be used
   to silence type errors.
 - **Package manager**: npm only. Lockfiles from other package managers MUST NOT be committed.
-- **Testing**: Vitest (sanctioned by Principle VI; no separate justification needed).
+- **Testing**: Vitest + Testing Library (`@testing-library/react`) + jsdom (sanctioned by
+  Principle VI; no separate justification needed).
 - **Styling**: Tailwind CSS v4 plus the tokens and component classes in
   `apps/admin/app/globals.css` (Principle I).
 - **Next.js**: `apps/admin` uses a recent Next.js version with breaking changes. Before writing
@@ -113,8 +112,8 @@ Convex swap) safe.
 
 ## Development Workflow & Quality Gates
 
-- Features follow the Spec Kit flow: `/speckit-specify` → `/speckit-plan` → `/speckit-tasks`
-  → `/speckit-implement`.
+- Features follow the Spec Kit flow: `/speckit-specify` → `/speckit-clarify` → `/speckit-plan`
+  → `/speckit-tasks` → `/speckit-implement`.
 - Each spec MUST reference the Figma design (screenshot or Figma link) for any UI it
   introduces.
 - Each plan MUST pass the Constitution Check against all six principles, and MUST list any new
@@ -135,4 +134,4 @@ Convex swap) safe.
   recorded in the plan's Complexity Tracking table with its justification, or it is not allowed.
 - Runtime development guidance for the admin app lives in `apps/admin/AGENTS.md`.
 
-**Version**: 1.0.0 | **Ratified**: 2026-11-17 | **Last Amended**: 2026-11-17
+**Version**: 1.1.0 | **Ratified**: 2026-11-17 | **Last Amended**: 2026-11-17
