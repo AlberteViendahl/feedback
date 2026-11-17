@@ -107,7 +107,7 @@ There is no transition back to `open`, and `done` is final in this feature.
 
 ## Inbox UI state (client-only, not persisted)
 
-Held by the `FeedbackInbox` container (see [contracts/components.md](contracts/components.md)).
+Held by the `Inbox` container (see [contracts/components.md](contracts/components.md)).
 
 | Field | Type | Initial value |
 |-------|------|---------------|

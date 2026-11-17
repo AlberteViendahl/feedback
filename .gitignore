@@ -1,0 +1,4 @@
+# Each app/package keeps its own .gitignore; these apply repo-wide.
+node_modules/
+.DS_Store
+*.log

@@ -1,0 +1,33 @@
+import type { Feedback } from "@/lib/types";
+import type { CategoryFilter, InboxState } from "./state";
+
+function inCategory(tickets: Feedback[], category: CategoryFilter): Feedback[] {
+  return category === "all" ? tickets : tickets.filter((ticket) => ticket.category === category);
+}
+
+export function getVisibleTickets(state: InboxState): Feedback[] {
+  const byCategory = inCategory(state.tickets, state.categoryFilter);
+  const byStatus =
+    state.statusFilter === "done"
+      ? byCategory.filter((ticket) => ticket.status === "done")
+      : byCategory;
+  const direction = state.sortOrder === "newest" ? -1 : 1;
+  return [...byStatus].sort((a, b) => direction * (a._creationTime - b._creationTime));
+}
+
+/** Counts for the All/Done switch; both follow the current category filter. */
+export function getCounts(
+  tickets: Feedback[],
+  category: CategoryFilter,
+): { all: number; done: number } {
+  const inScope = inCategory(tickets, category);
+  return {
+    all: inScope.length,
+    done: inScope.filter((ticket) => ticket.status === "done").length,
+  };
+}
+
+/** The open ticket, or null when nothing is selected or a filter hides it. */
+export function getSelectedTicket(state: InboxState): Feedback | null {
+  return getVisibleTickets(state).find((ticket) => ticket._id === state.selectedId) ?? null;
+}

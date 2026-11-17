@@ -12,20 +12,20 @@ mock data is replaced by Convex queries (Constitution V). Types refer to
 ```ts
 // apps/admin/app/page.tsx (Server Component)
 // The ONLY place that knows where tickets come from. Today: mock data. Later: Convex.
-<FeedbackInbox initialTickets={mockFeedback} />
+<Inbox initialTickets={mockFeedback} />
 ```
 
-## Components (`apps/admin/components/feedback-inbox/`)
+## Components (`apps/admin/components/inbox/`)
 
-Only `FeedbackInbox` holds state. Every other component is presentational: it renders its props
+Only `Inbox` holds state. Every other component is presentational: it renders its props
 and reports user actions through callbacks.
 
 ```ts
-// FeedbackInbox.tsx  —  "use client"; owns InboxState (see data-model.md)
-type FeedbackInboxProps = { initialTickets: Feedback[] }
+// Inbox.tsx  —  "use client"; owns InboxState (see data-model.md)
+type InboxProps = { initialTickets: Feedback[] }
 
-// InboxToolbar.tsx  —  All/Done switch, category <select>, sort toggle
-type InboxToolbarProps = {
+// Toolbar.tsx  —  All/Done switch, category <select>, sort toggle
+type ToolbarProps = {
   statusFilter: "all" | "done"
   categoryFilter: "all" | FeedbackCategory
   sortOrder: "newest" | "oldest"
@@ -63,14 +63,24 @@ type TicketDetailProps = {
 
 // Sub-parts of the panel, each presentational:
 type AttachmentListProps = { attachments: Attachment[] }        // hidden when empty
-type ContextTableProps = { context: FeedbackContext; sentAt: number }
-type ReplySectionProps = {
-  reply: Reply | undefined       // set → read-only sent reply; undefined → form
+type ContextTableProps = {
+  context: FeedbackContext
+  sender: Pick<Sender, "email" | "userId">   // "Bruger" cell; added during implementation
+  sentAt: number
+}
+// ReplySection.tsx exports two parts (split during implementation: in the design the field
+// scrolls with the content while the buttons stay pinned to the bottom of the panel).
+type ReplySectionProps = {        // in the scrolling body
+  reply: Reply | undefined       // set → read-only sent reply; undefined → field
   replyDraft: string
-  githubIssueCreated: boolean    // true → "Opret GitHub-issue" unavailable
-  notice: "reply-sent" | "issue-created" | null
   onReplyDraftChange: (text: string) => void
-  onSendReply: () => void        // only callable when replyDraft.trim() !== ""
+}
+type ReplyActionsProps = {        // pinned footer
+  reply: Reply | undefined       // set → "Færdig/send" not rendered
+  replyDraft: string             // blank → "Færdig/send" disabled
+  githubIssueCreated: boolean    // true → "Opret GitHub-issue" not rendered
+  notice: InboxNotice            // role="status" confirmation
+  onSendReply: () => void
   onCreateIssue: () => void
 }
 

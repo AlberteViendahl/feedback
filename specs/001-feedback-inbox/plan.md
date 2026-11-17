@@ -11,7 +11,7 @@ details panel with attachments, captured context, a one-time reply and a simulat
 issue" action, all driven by mock data and matching the Figma design in Danish.
 
 Technical approach: `apps/admin/app/page.tsx` stays a Server Component that passes mock data to a
-single Client Component container (`FeedbackInbox`) holding all interaction state in a pure
+single Client Component container (`Inbox`) holding all interaction state in a pure
 reducer. All other components are presentational and built from native, keyboard-accessible
 elements styled with the existing `globals.css` classes. Time is read only in the browser via a
 `useSyncExternalStore` hook, because Cache Components pre-renders client components
@@ -71,7 +71,7 @@ All items are resolved; no NEEDS CLARIFICATION remain (see [research.md](researc
 | `vitest`, `jsdom`, `@testing-library/react` | Sanctioned test stack (Constitution VI). |
 | `@testing-library/dom` | Required peer dependency of `@testing-library/react`. |
 | `@vitejs/plugin-react` | JSX transform for Vitest; part of the official Next.js Vitest setup. |
-| `vite-tsconfig-paths` | Resolves the `@/*` path alias in tests; part of the official setup. |
+| ~~`vite-tsconfig-paths`~~ | Dropped during implementation: Vite 8 resolves the `@/*` alias itself (`resolve.tsconfigPaths: true`). |
 | `@testing-library/user-event` | Realistic Tab/Enter/Space keyboard tests for FR-024; `fireEvent` cannot move focus. |
 
 ## Project Structure
@@ -99,21 +99,24 @@ specs/001-feedback-inbox/
 ```text
 apps/admin/
 ├── app/
-│   ├── page.tsx                      # REPLACED: Server Component, passes mock data to FeedbackInbox
+│   ├── page.tsx                      # REPLACED: Server Component, passes mock data to Inbox
 │   └── globals.css                   # + inbox layout tokens, :focus-visible rule
 ├── components/
-│   └── feedback-inbox/
-│       ├── FeedbackInbox.tsx         # "use client" container: useReducer + useNow
-│       ├── InboxToolbar.tsx          # All/Done switch, category <select>, sort toggle
-│       ├── TicketList.tsx            # scrollable list + empty state
-│       ├── TicketRow.tsx             # one row (<button>)
-│       ├── TicketDetail.tsx          # right panel + empty state
-│       ├── AttachmentList.tsx
-│       ├── ContextTable.tsx
-│       ├── ReplySection.tsx          # reply form / sent reply / actions / confirmation
-│       ├── CategoryIcon.tsx
-│       ├── StatusBadge.tsx
-│       └── *.test.tsx                # component tests, next to each component
+│   ├── Icons/                        # shared icons any component can import
+│   │   ├── Icon.tsx                  # renders a Figma SVG from public/icons/ at its native size
+│   │   └── CategoryIcon.tsx (+ test)
+│   └── inbox/                        # main component at the root, one folder per sub-component
+│       ├── Inbox.tsx                 # "use client" container: useReducer + useNow
+│       ├── Inbox.test.tsx, Inbox.keyboard.test.tsx
+│       ├── Toolbar/                  # All/Done switch, category <select>, sort toggle
+│       ├── TicketList/               # scrollable list + empty state
+│       ├── TicketRow/                # one row (<button>)
+│       ├── TicketDetail/             # right panel + empty state
+│       ├── AttachmentList/
+│       ├── ContextTable/
+│       ├── ReplySection/             # reply field or sent reply + pinned actions/confirmation
+│       └── StatusBadge/
+│                                     # each folder: <Name>.tsx + <Name>.test.tsx
 ├── lib/
 │   ├── types.ts                      # the single source of shared types (Constitution II)
 │   ├── mock-feedback.ts              # ≥ 15 tickets (data-model.md, "Mock data")

@@ -10,7 +10,7 @@ All findings were checked against the installed versions in `apps/admin` (Next.j
 
 - **Decision**: The inbox replaces the Next.js starter page at `apps/admin/app/page.tsx`. The
   page stays a Server Component that imports the mock data and passes it as a prop to one
-  Client Component container, `FeedbackInbox` (`"use client"`). All interaction state lives in
+  Client Component container, `Inbox` (`"use client"`). All interaction state lives in
   that container; every other inbox component is presentational and receives data and
   callbacks via props.
 - **Rationale**: Filtering, selection, reply text and status changes are browser state, so they
@@ -71,7 +71,11 @@ All findings were checked against the installed versions in `apps/admin` (Next.j
 - **Decision**: Follow the bundled Next.js Vitest guide (`02-guides/testing/vitest.md`): install
   `vitest`, `@vitejs/plugin-react`, `jsdom`, `@testing-library/react`, `@testing-library/dom`
   and `vite-tsconfig-paths` as dev dependencies, add `vitest.config.mts` with the React and
-  tsconfig-paths plugins and `environment: "jsdom"`, and a `"test": "vitest"` script. Add
+  tsconfig-paths plugins and `environment: "jsdom"`, and a `"test": "vitest"` script.
+  *Implementation note*: Vitest 5 runs on Vite 8, which resolves tsconfig paths natively
+  (`resolve.tsconfigPaths: true`), so `vite-tsconfig-paths` was dropped. Vitest 5 also needs
+  `@types/node` 22 or 24+, so `@types/node` was raised from `^20` to `^24` to match the Node 24
+  runtime. Add
   `@testing-library/user-event` for keyboard tests. Add a `vitest.setup.ts` that calls
   Testing Library's `cleanup()` after each test. Tests sit next to the code they test
   (`*.test.ts` / `*.test.tsx`).
