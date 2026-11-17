@@ -493,6 +493,15 @@ body {
     padding: var(--page-padding);
   }
 
+  /* Centered message on pages without a Figma design (e.g. "Du er logget ud"). */
+  .message-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--card-padding);
+    padding: var(--card-padding);
+  }
+
   /* ---------- Side menu (values measured in Figma node 323:1676) ---------- */
 
   .side-menu {

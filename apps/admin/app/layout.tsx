@@ -13,7 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Feedback · Admin",
+  title: {
+    default: "Feedback · Admin",
+    template: "%s · Feedback · Admin",
+  },
   description: "Indbakke for feedback fra GEOtracking og SimpleSERP",
 };
 
