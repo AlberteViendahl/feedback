@@ -8,6 +8,10 @@ All findings were checked against the installed versions in `apps/admin` (Next.j
 
 ## R1. Where the inbox lives and how the page is split
 
+> **Superseded by spec 002:** the page moved to `app/(admin)/page.tsx` and renders
+> `InboxContainer`; mock data is imported by `app/(admin)/layout.tsx` instead. See
+> [spec 002 research R1–R3](../002-side-menu/research.md#r1-sharing-ticket-state-between-the-menu-and-the-inbox).
+
 - **Decision**: The inbox replaces the Next.js starter page at `apps/admin/app/page.tsx`. The
   page stays a Server Component that imports the mock data and passes it as a prop to one
   Client Component container, `Inbox` (`"use client"`). All interaction state lives in

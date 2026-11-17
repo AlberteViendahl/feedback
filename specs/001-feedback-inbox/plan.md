@@ -6,6 +6,9 @@
 
 ## Summary
 
+> **Superseded by spec 002 (shared ticket state):** ticket data now lives in a provider in
+> `app/(admin)/layout.tsx` and `Inbox` receives it as props. See [spec 002 data model](../002-side-menu/data-model.md#state-split-changes-the-inbox-from-spec-001).
+
 Build the feedback inbox for the admin app: a filterable, sortable list of feedback tickets and a
 details panel with attachments, captured context, a one-time reply and a simulated "create GitHub
 issue" action, all driven by mock data and matching the Figma design in Danish.
