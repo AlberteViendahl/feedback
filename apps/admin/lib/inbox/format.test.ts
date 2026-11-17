@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   CATEGORY_LABELS,
-  PLATFORM_LABELS,
   formatDateTime,
   formatDuration,
   formatFileSize,
@@ -79,8 +78,7 @@ describe("small formatters", () => {
     expect(getPagePath("not a url")).toBe("not a url");
   });
 
-  it("has Danish labels for categories and platforms", () => {
+  it("has Danish labels for categories", () => {
     expect(CATEGORY_LABELS).toEqual({ bug: "Fejl", idea: "Forslag", general: "Generel feedback" });
-    expect(PLATFORM_LABELS).toEqual({ geotracking: "GEOtracking", simpleserp: "SimpleSERP" });
   });
 });

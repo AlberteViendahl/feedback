@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { PLATFORM_LABELS, formatDateTime, getPagePath } from "@/lib/inbox/format";
+import { formatDateTime, getPagePath } from "@/lib/inbox/format";
+import { PLATFORM_LABELS } from "@/lib/platforms";
 import { isSafeHttpUrl } from "@/lib/inbox/safe-url";
 import type { FeedbackContext, Sender } from "@/lib/types";
 import { Icon, type IconName } from "@/components/Icons/Icon";
