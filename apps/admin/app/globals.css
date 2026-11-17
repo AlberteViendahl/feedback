@@ -473,6 +473,26 @@ body {
     cursor: not-allowed;
   }
 
+  /* ---------- App shell: sticky full-height menu + scrolling content (spec 002, FR-001) ---------- */
+
+  .app-shell {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .app-shell__menu {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    flex-shrink: 0;
+  }
+
+  .app-shell__content {
+    flex: 1;
+    min-width: 0;
+    padding: var(--page-padding);
+  }
+
   /* ---------- Feedback inbox layout (values measured in Figma node 323:1906) ---------- */
 
   .inbox {

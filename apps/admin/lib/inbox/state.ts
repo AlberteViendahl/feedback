@@ -1,12 +1,14 @@
-import type { Feedback, FeedbackCategory } from "@/lib/types";
+import type { FeedbackCategory } from "@/lib/types";
+
+// The inbox's view state only. Ticket data lives in lib/tickets/state.ts and is shared by
+// every admin page (spec 002); this state resets whenever the inbox remounts.
 
 export type StatusFilter = "all" | "done";
 export type CategoryFilter = "all" | FeedbackCategory;
 export type SortOrder = "newest" | "oldest";
 export type InboxNotice = "reply-sent" | "issue-created" | null;
 
-export type InboxState = {
-  tickets: Feedback[];
+export type InboxView = {
   statusFilter: StatusFilter;
   categoryFilter: CategoryFilter;
   sortOrder: SortOrder;
@@ -15,21 +17,19 @@ export type InboxState = {
   notice: InboxNotice;
 };
 
-export type InboxAction =
+export type InboxViewAction =
   | { type: "select"; id: string }
   | { type: "setStatusFilter"; value: StatusFilter }
   | { type: "setCategoryFilter"; value: CategoryFilter }
   | { type: "setSortOrder"; value: SortOrder }
   | { type: "editReply"; text: string }
-  | { type: "sendReply"; now: number }
-  | { type: "createIssue" };
+  | { type: "showNotice"; notice: Exclude<InboxNotice, null> };
 
 export const STANDARD_REPLY =
   "Din oplevelse er vigtig for os. Vi samler alle beskederne sammen, så vi kan gøre hjemmesiden endnu bedre.";
 
-export function createInitialState(tickets: Feedback[]): InboxState {
+export function createInitialView(): InboxView {
   return {
-    tickets,
     statusFilter: "all",
     categoryFilter: "all",
     sortOrder: "newest",
@@ -39,60 +39,19 @@ export function createInitialState(tickets: Feedback[]): InboxState {
   };
 }
 
-function updateTicket(
-  tickets: Feedback[],
-  id: string,
-  update: (ticket: Feedback) => Feedback,
-): Feedback[] {
-  return tickets.map((ticket) => (ticket._id === id ? update(ticket) : ticket));
-}
-
-export function inboxReducer(state: InboxState, action: InboxAction): InboxState {
-  const selected = state.tickets.find((ticket) => ticket._id === state.selectedId);
-
+export function inboxViewReducer(view: InboxView, action: InboxViewAction): InboxView {
   switch (action.type) {
-    case "select": {
-      if (!state.tickets.some((ticket) => ticket._id === action.id)) return state;
-      return {
-        ...state,
-        tickets: updateTicket(state.tickets, action.id, (ticket) => ({ ...ticket, isRead: true })),
-        selectedId: action.id,
-        replyDraft: STANDARD_REPLY,
-        notice: null,
-      };
-    }
+    case "select":
+      return { ...view, selectedId: action.id, replyDraft: STANDARD_REPLY, notice: null };
     case "setStatusFilter":
-      return { ...state, statusFilter: action.value };
+      return { ...view, statusFilter: action.value };
     case "setCategoryFilter":
-      return { ...state, categoryFilter: action.value };
+      return { ...view, categoryFilter: action.value };
     case "setSortOrder":
-      return { ...state, sortOrder: action.value };
+      return { ...view, sortOrder: action.value };
     case "editReply":
-      return { ...state, replyDraft: action.text };
-    case "sendReply": {
-      const text = state.replyDraft.trim();
-      if (!selected || selected.reply || text === "") return state;
-      return {
-        ...state,
-        tickets: updateTicket(state.tickets, selected._id, (ticket) => ({
-          ...ticket,
-          reply: { text, sentAt: action.now },
-          status: "done",
-        })),
-        notice: "reply-sent",
-      };
-    }
-    case "createIssue": {
-      if (!selected || selected.githubIssueCreated) return state;
-      return {
-        ...state,
-        tickets: updateTicket(state.tickets, selected._id, (ticket) => ({
-          ...ticket,
-          githubIssueCreated: true,
-          status: ticket.status === "done" ? "done" : "in_progress",
-        })),
-        notice: "issue-created",
-      };
-    }
+      return { ...view, replyDraft: action.text };
+    case "showNotice":
+      return { ...view, notice: action.notice };
   }
 }

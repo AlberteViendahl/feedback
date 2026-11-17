@@ -2,7 +2,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { at, fixtureTickets } from "@/lib/inbox/test-fixtures";
-import { Inbox } from "./Inbox";
+import { TicketsProvider } from "@/components/TicketsProvider/TicketsProvider";
+import { InboxContainer } from "./InboxContainer";
 
 // FR-024 / SC-008: everything is reachable with Tab and works with Enter or Space.
 // Only the clock is faked (no fake timers), so userEvent keeps working.
@@ -28,7 +29,11 @@ async function tabTo(target: HTMLElement, maxSteps = 30) {
 
 describe("Inbox – keyboard only", () => {
   it("reaches the controls in visual order and operates them", async () => {
-    render(<Inbox initialTickets={fixtureTickets} />);
+    render(
+      <TicketsProvider initialTickets={fixtureTickets}>
+        <InboxContainer />
+      </TicketsProvider>,
+    );
 
     const all = screen.getByRole("button", { name: "Alle 5" });
     const done = screen.getByRole("button", { name: "Færdig 2" });
@@ -65,7 +70,11 @@ describe("Inbox – keyboard only", () => {
   });
 
   it("switches the status filter with Enter", async () => {
-    render(<Inbox initialTickets={fixtureTickets} />);
+    render(
+      <TicketsProvider initialTickets={fixtureTickets}>
+        <InboxContainer />
+      </TicketsProvider>,
+    );
     const done = screen.getByRole("button", { name: "Færdig 2" });
     await tabTo(done);
     await userEvent.keyboard("{Enter}");

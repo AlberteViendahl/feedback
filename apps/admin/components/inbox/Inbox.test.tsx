@@ -2,7 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { at, fixtureTickets } from "@/lib/inbox/test-fixtures";
-import { Inbox } from "./Inbox";
+import { TicketsProvider } from "@/components/TicketsProvider/TicketsProvider";
+import { InboxContainer } from "./InboxContainer";
 
 // Only the system clock is faked (no fake timers), so userEvent keeps working.
 beforeEach(() => {
@@ -14,7 +15,11 @@ afterEach(() => {
 });
 
 function renderInbox() {
-  render(<Inbox initialTickets={fixtureTickets} />);
+  render(
+      <TicketsProvider initialTickets={fixtureTickets}>
+        <InboxContainer />
+      </TicketsProvider>,
+    );
   return { list: screen.getByRole("list", { name: "Feedback" }) };
 }
 
