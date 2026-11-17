@@ -39,6 +39,20 @@ export type Reply = {
   sentAt: number;
 };
 
+export type Workspace = {
+  _id: string;
+  name: string;
+  /** Connected platforms, in display order. */
+  platforms: Platform[];
+};
+
+export type AdminUser = {
+  _id: string;
+  name: string;
+  role: string;
+  workspaceId: string;
+};
+
 export type Feedback = {
   _id: string;
   /** Time the feedback was sent, in milliseconds since epoch. */

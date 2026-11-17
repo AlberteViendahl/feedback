@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { getCounts, getSelectedTicket, getVisibleTickets } from "./select";
 import {
-  createInitialState,
-  inboxReducer,
+  createInitialView,
+  inboxViewReducer,
   type CategoryFilter,
   type SortOrder,
   type StatusFilter,
@@ -38,16 +38,22 @@ describe("getVisibleTickets", () => {
   it.each(combinations)(
     "status %s, category %s, sorted %s",
     (statusFilter: StatusFilter, categoryFilter: CategoryFilter, sortOrder: SortOrder) => {
-      const state = { ...createInitialState(fixtureTickets), statusFilter, categoryFilter, sortOrder };
+      const view = { ...createInitialView(), statusFilter, categoryFilter, sortOrder };
       const ids = expected[statusFilter][categoryFilter];
       const ordered = sortOrder === "newest" ? ids : [...ids].reverse();
-      expect(getVisibleTickets(state).map((ticket) => ticket._id)).toEqual(ordered);
+      expect(getVisibleTickets(fixtureTickets, view).map((ticket) => ticket._id)).toEqual(ordered);
     },
   );
 
   it("sorts by time even when the input is unordered", () => {
-    const state = createInitialState([...fixtureTickets].reverse());
-    expect(getVisibleTickets(state).map((ticket) => ticket._id)).toEqual(["t1", "t2", "t3", "t4", "t5"]);
+    const unordered = [...fixtureTickets].reverse();
+    expect(getVisibleTickets(unordered, createInitialView()).map((ticket) => ticket._id)).toEqual([
+      "t1",
+      "t2",
+      "t3",
+      "t4",
+      "t5",
+    ]);
   });
 });
 
@@ -64,17 +70,17 @@ describe("getCounts", () => {
 
 describe("getSelectedTicket", () => {
   it("returns null when nothing is selected", () => {
-    expect(getSelectedTicket(createInitialState(fixtureTickets))).toBeNull();
+    expect(getSelectedTicket(fixtureTickets, createInitialView())).toBeNull();
   });
 
   it("returns the selected ticket while it is visible", () => {
-    const state = inboxReducer(createInitialState(fixtureTickets), { type: "select", id: "t1" });
-    expect(getSelectedTicket(state)?._id).toBe("t1");
+    const view = inboxViewReducer(createInitialView(), { type: "select", id: "t1" });
+    expect(getSelectedTicket(fixtureTickets, view)?._id).toBe("t1");
   });
 
   it("returns null when a filter hides the selected ticket", () => {
-    let state = inboxReducer(createInitialState(fixtureTickets), { type: "select", id: "t1" });
-    state = inboxReducer(state, { type: "setStatusFilter", value: "done" });
-    expect(getSelectedTicket(state)).toBeNull();
+    let view = inboxViewReducer(createInitialView(), { type: "select", id: "t1" });
+    view = inboxViewReducer(view, { type: "setStatusFilter", value: "done" });
+    expect(getSelectedTicket(fixtureTickets, view)).toBeNull();
   });
 });

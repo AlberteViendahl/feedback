@@ -107,6 +107,10 @@ There is no transition back to `open`, and `done` is final in this feature.
 
 ## Inbox UI state (client-only, not persisted)
 
+> **Superseded by spec 002:** this state is now split into ticket data (shared via
+> `TicketsProvider`, kept across pages) and the inbox view (local to `Inbox`, reset on remount).
+> See [spec 002 data model](../002-side-menu/data-model.md#state-split-changes-the-inbox-from-spec-001).
+
 Held by the `Inbox` container (see [contracts/components.md](contracts/components.md)).
 
 | Field | Type | Initial value |

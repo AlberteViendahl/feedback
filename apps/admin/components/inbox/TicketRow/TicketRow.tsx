@@ -1,9 +1,5 @@
-import {
-  PLATFORM_LABELS,
-  formatRelativeTime,
-  formatShortDate,
-  getPagePath,
-} from "@/lib/inbox/format";
+import { formatRelativeTime, formatShortDate, getPagePath } from "@/lib/inbox/format";
+import { PLATFORM_LABELS } from "@/lib/platforms";
 import type { Feedback } from "@/lib/types";
 import { CategoryIcon } from "@/components/Icons/CategoryIcon";
 import { Icon } from "@/components/Icons/Icon";

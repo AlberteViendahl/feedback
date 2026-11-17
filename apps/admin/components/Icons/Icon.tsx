@@ -19,6 +19,14 @@ const ICONS = {
   reply: { width: 14.6333, height: 12.3 },
   sort: { width: 14.05, height: 12.3 },
   "chevron-down": { width: 8.8, height: 5.3 },
+  settings: { width: 14.6334, height: 15.2167 },
+  logout: { width: 14.05, height: 13.4667 },
+  "platform-geotracking": { width: 28, height: 28 },
+  "platform-simpleserp": { width: 28, height: 28 },
+  "nav-globe": { width: 14.6333, height: 14.6333 },
+  "nav-search": { width: 12.8833, height: 12.8833 },
+  "workspace-avatar": { width: 28, height: 28 },
+  "user-avatar": { width: 30, height: 30 },
 } as const;
 
 export type IconName = keyof typeof ICONS;

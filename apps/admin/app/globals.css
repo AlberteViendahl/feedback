@@ -473,6 +473,134 @@ body {
     cursor: not-allowed;
   }
 
+  /* ---------- App shell: sticky full-height menu + scrolling content (spec 002, FR-001) ---------- */
+
+  .app-shell {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  .app-shell__menu {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    flex-shrink: 0;
+  }
+
+  .app-shell__content {
+    flex: 1;
+    min-width: 0;
+    padding: var(--page-padding);
+  }
+
+  /* Centered message on pages without a Figma design (e.g. "Du er logget ud"). */
+  .message-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--card-padding);
+    padding: var(--card-padding);
+  }
+
+  /* ---------- Side menu (values measured in Figma node 323:1676) ---------- */
+
+  .side-menu {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 12px;
+  }
+
+  .side-menu__brand {
+    flex-shrink: 0;
+    margin-bottom: 10px;
+  }
+
+  /* Workspace and platforms; scrolls if the window is too short (spec edge case). */
+  .side-menu__scroll {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .side-menu__section-label {
+    margin: 10px 0 10px 7px;
+  }
+
+  .side-menu__platforms {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .side-menu__platforms .nav-item {
+    gap: 10px;
+    padding-left: 7px;
+  }
+
+  .side-menu__footer {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    gap: 4px;
+    padding-top: 8px;
+  }
+
+  .side-menu__footer .nav-item {
+    gap: 10px;
+    padding-left: 20px;
+  }
+
+  .nav-item__count {
+    flex-shrink: 0;
+    margin-left: auto;
+    font-size: var(--font-size-xs);
+    color: var(--text-subtle);
+  }
+  .nav-item--active .nav-item__count {
+    color: var(--text-secondary);
+  }
+
+  /* Layers a glyph or letter on top of its circle. */
+  .icon-stack {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+  }
+  .icon-stack > * {
+    grid-area: 1 / 1;
+  }
+
+  .user-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 12px 8px;
+  }
+
+  .user-block__initial {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+  }
+
+  .user-block__name {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+  }
+
+  .user-block__logout {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    margin-left: auto;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+  }
+
   /* ---------- Feedback inbox layout (values measured in Figma node 323:1906) ---------- */
 
   .inbox {

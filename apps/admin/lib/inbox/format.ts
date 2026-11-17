@@ -1,4 +1,4 @@
-import type { FeedbackCategory, Platform } from "@/lib/types";
+import type { FeedbackCategory } from "@/lib/types";
 import { isSafeHttpUrl } from "./safe-url";
 
 // Fixed time zone so pre-rendered HTML and the browser produce identical text (research R3).
@@ -10,11 +10,6 @@ export const CATEGORY_LABELS: Record<FeedbackCategory, string> = {
   bug: "Fejl",
   idea: "Forslag",
   general: "Generel feedback",
-};
-
-export const PLATFORM_LABELS: Record<Platform, string> = {
-  geotracking: "GEOtracking",
-  simpleserp: "SimpleSERP",
 };
 
 const dayKeyFormat = new Intl.DateTimeFormat("en-CA", {

@@ -9,6 +9,11 @@ mock data is replaced by Convex queries (Constitution V). Types refer to
 
 ## Data entry point
 
+> **Superseded by spec 002 (shared ticket state):** tickets now come from `TicketsProvider` in
+> `app/(admin)/layout.tsx`; `app/(admin)/page.tsx` renders `<InboxContainer />`, which passes
+> `tickets` and ticket callbacks to `Inbox`. See [spec 002 contracts](../../002-side-menu/contracts/components.md#inbox-changes-spec-001-contract--this-feature)
+> and [spec 002 data model](../../002-side-menu/data-model.md#state-split-changes-the-inbox-from-spec-001).
+
 ```ts
 // apps/admin/app/page.tsx (Server Component)
 // The ONLY place that knows where tickets come from. Today: mock data. Later: Convex.
@@ -16,6 +21,10 @@ mock data is replaced by Convex queries (Constitution V). Types refer to
 ```
 
 ## Components (`apps/admin/components/inbox/`)
+
+> **Superseded by spec 002:** `Inbox` now takes
+> `{ tickets, onOpenTicket, onSendReply, onCreateIssue }` and keeps only view state; the
+> sub-components below are unchanged.
 
 Only `Inbox` holds state. Every other component is presentational: it renders its props
 and reports user actions through callbacks.
@@ -99,6 +108,10 @@ type StatusBadgeProps = { ticket: Pick<Feedback, "isRead" | "status"> } // badge
 - Styling uses classes and tokens from `apps/admin/app/globals.css` only (Constitution I).
 
 ## Pure functions (`apps/admin/lib/inbox/`)
+
+> **Superseded by spec 002:** ticket rules moved to `lib/tickets/state.ts` (`ticketsReducer`);
+> `lib/inbox/state.ts` now holds only the view (`inboxViewReducer`), and the selectors take
+> `(tickets, view)`. See [spec 002 data model](../../002-side-menu/data-model.md#state-split-changes-the-inbox-from-spec-001).
 
 ```ts
 // state.ts
