@@ -20,6 +20,10 @@ dates, Figma icons via `next/image`, Vitest setup, tokens in `globals.css`) stil
   while the page component (the inbox) remounts. Splitting data from view state gives exactly
   the behavior chosen in clarification, and makes the provider the single place to swap for
   Convex queries and mutations later.
+- **Corrected by spec 003 (2026-11-18)**: with Cache Components, the page does *not* remount on
+  navigation. Next.js hides it with `<Activity>`, which keeps its state, so the view did not
+  reset (FR-017). `Inbox` now resets its view in a `useLayoutEffect` cleanup; see
+  [spec 003 research R9](../003-search-top-bar/research.md#r9-nextjs-keeps-a-page-mounted-after-you-navigate-away-found-during-implementation).
 - **Alternatives considered**: Keep everything in the inbox and recompute counts from the mock
   data (counts would not update live, rejected by Q1 in specify); put view state in the provider
   too (rejected by clarification Q1); a state library such as Zustand (new dependency for

@@ -51,6 +51,8 @@ type TicketListProps = {
   now: number | null            // null before hydration → absolute dates
   onSelect: (id: string) => void
 }
+// Spec 003 adds `isSearching: boolean` (picks the empty-state text): see
+// ../../003-search-top-bar/contracts/components.md
 
 // TicketRow.tsx  —  one <button> row
 type TicketRowProps = {
@@ -129,6 +131,8 @@ function inboxReducer(state: InboxState, action: InboxAction): InboxState
 // select.ts
 function getVisibleTickets(state: InboxState): Feedback[]
 function getCounts(tickets: Feedback[], category: "all" | FeedbackCategory): { all: number; done: number }
+// ↑ Spec 003 changes this to getCounts(tickets, { categoryFilter, search }): see
+//   ../../003-search-top-bar/contracts/components.md
 function getSelectedTicket(state: InboxState): Feedback | null   // null if hidden by filters
 
 // format.ts  (da-DK, timeZone Europe/Copenhagen — see research.md R3)
