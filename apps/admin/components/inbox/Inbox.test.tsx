@@ -1,7 +1,8 @@
 import { render, screen, within } from "@testing-library/react";
+import { Activity } from "react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { at, fixtureTickets } from "@/lib/inbox/test-fixtures";
+import { at, fixtureTickets, makeTicket } from "@/lib/inbox/test-fixtures";
 import { TicketsProvider } from "@/components/TicketsProvider/TicketsProvider";
 import { InboxContainer } from "./InboxContainer";
 
@@ -14,9 +15,9 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-function renderInbox() {
+function renderInbox(tickets = fixtureTickets) {
   render(
-      <TicketsProvider initialTickets={fixtureTickets}>
+      <TicketsProvider initialTickets={tickets}>
         <InboxContainer />
       </TicketsProvider>,
     );
@@ -197,5 +198,141 @@ describe("Inbox – replying and escalating (US4)", () => {
     const list = await openTicket("Løst fejl");
     await userEvent.click(screen.getByRole("button", { name: "Opret GitHub-issue" }));
     expect(within(rowFor(list, "Løst fejl")).getByText("Færdig")).toBeTruthy();
+  });
+});
+
+describe("Inbox – searching (spec 003, US1)", () => {
+  const searchField = () => screen.getByRole("searchbox", { name: "Søg i feedback" });
+
+  it("puts the search bar directly before the inbox, outside it (research R6)", () => {
+    renderInbox();
+    const inbox = screen.getByRole("region", { name: "Feedback-indbakke" });
+    expect(inbox.previousElementSibling).toBe(screen.getByRole("search"));
+  });
+
+  it("narrows the list while typing, without Enter (US1-1)", async () => {
+    const { list } = renderInbox();
+    await userEvent.type(searchField(), "forslag");
+    expect(rowTitles(list)).toEqual(["Et forslag", "Gammelt forslag"]);
+  });
+
+  it("ignores case, including Danish letters (US1-3)", async () => {
+    const { list } = renderInbox();
+    await userEvent.type(searchField(), "FØRSTE");
+    expect(rowTitles(list)).toEqual(["Første fejl"]);
+  });
+
+  it("needs every word to match (US1-4)", async () => {
+    const { list } = renderInbox();
+    await userEvent.type(searchField(), "første fejl");
+    expect(rowTitles(list)).toEqual(["Første fejl"]);
+
+    await userEvent.clear(searchField());
+    await userEvent.type(searchField(), "fejl forslag");
+    expect(screen.queryByRole("list", { name: "Feedback" })).toBeNull();
+  });
+
+  it("combines with the category and Færdig filters and the counts follow (US1-5)", async () => {
+    renderInbox();
+    await userEvent.selectOptions(screen.getByRole("combobox", { name: /Kategori/ }), "Fejl");
+    await userEvent.type(searchField(), "fejl");
+    expect(screen.getByRole("button", { name: "Alle 2" })).toBeTruthy();
+    await userEvent.click(screen.getByRole("button", { name: "Færdig 1" }));
+
+    const list = screen.getByRole("list", { name: "Feedback" });
+    expect(rowTitles(list)).toEqual(["Løst fejl"]);
+  });
+
+  it("says when the search finds nothing, and treats spaces as no search (US1-6)", async () => {
+    renderInbox();
+    await userEvent.type(searchField(), "zzz");
+    expect(screen.getByText("Ingen feedback matcher søgningen.")).toBeTruthy();
+
+    await userEvent.clear(searchField());
+    await userEvent.type(searchField(), "   ");
+    expect(rowTitles(screen.getByRole("list", { name: "Feedback" }))).toHaveLength(fixtureTickets.length);
+    expect(screen.queryByText(/Ingen feedback matcher/)).toBeNull();
+  });
+
+  it("restores the list on Escape and keeps the filters (US1-7)", async () => {
+    const { list } = renderInbox();
+    await userEvent.click(screen.getByRole("button", { name: "Færdig 2" }));
+    await userEvent.type(searchField(), "løst");
+    expect(rowTitles(list)).toEqual(["Løst fejl"]);
+
+    await userEvent.keyboard("{Escape}");
+    expect((searchField() as HTMLInputElement).value).toBe("");
+    expect(rowTitles(list)).toEqual(["Løst fejl", "Gammelt forslag"]);
+    expect(screen.getByRole("button", { name: "Færdig 2" }).getAttribute("aria-pressed")).toBe("true");
+  });
+
+  it("hides the open ticket while the search does not match it, and shows it again after (US1-8)", async () => {
+    const { list } = renderInbox();
+    await userEvent.click(rowFor(list, "Første fejl"));
+    await userEvent.type(searchField(), "forslag");
+    expect(screen.getByText("Vælg en feedback i listen for at se detaljerne.")).toBeTruthy();
+
+    await userEvent.clear(searchField());
+    expect(screen.getByRole("heading", { name: "#FB-1005" })).toBeTruthy();
+  });
+
+  it("marks nothing as read (FR-014)", async () => {
+    const { list } = renderInbox();
+    await userEvent.type(searchField(), "første");
+    await userEvent.clear(searchField());
+    expect(within(rowFor(list, "Første fejl")).getByText("Ny")).toBeTruthy();
+  });
+
+  it("starts empty again when the inbox remounts (FR-015)", async () => {
+    const { rerender } = render(
+      <TicketsProvider initialTickets={fixtureTickets}>
+        <InboxContainer key="first" />
+      </TicketsProvider>,
+    );
+    await userEvent.type(searchField(), "forslag");
+
+    rerender(
+      <TicketsProvider initialTickets={fixtureTickets}>
+        <InboxContainer key="second" />
+      </TicketsProvider>,
+    );
+    expect((searchField() as HTMLInputElement).value).toBe("");
+    expect(rowTitles(screen.getByRole("list", { name: "Feedback" }))).toHaveLength(fixtureTickets.length);
+  });
+
+  it("starts fresh when Next.js hides the page and shows it again (FR-015, spec 002 FR-017)", async () => {
+    // With Cache Components, Next.js hides a page you navigate away from with <Activity>
+    // instead of unmounting it (research R9).
+    function Page({ mode }: { mode: "visible" | "hidden" }) {
+      return (
+        <TicketsProvider initialTickets={fixtureTickets}>
+          <Activity mode={mode}>
+            <InboxContainer />
+          </Activity>
+        </TicketsProvider>
+      );
+    }
+    const { rerender } = render(<Page mode="visible" />);
+    await userEvent.type(searchField(), "første");
+    await userEvent.click(rowFor(screen.getByRole("list", { name: "Feedback" }), "Første fejl"));
+    await userEvent.click(screen.getByRole("button", { name: "Færdig 0" }));
+
+    rerender(<Page mode="hidden" />);
+    rerender(<Page mode="visible" />);
+
+    expect((searchField() as HTMLInputElement).value).toBe("");
+    expect(screen.getByRole("button", { name: "Alle 5" }).getAttribute("aria-pressed")).toBe("true");
+    expect(rowTitles(screen.getByRole("list", { name: "Feedback" }))).toHaveLength(fixtureTickets.length);
+    expect(screen.getByText("Vælg en feedback i listen for at se detaljerne.")).toBeTruthy();
+    // Ticket changes live in the provider and survive: the opened ticket stays read.
+    expect(within(rowFor(screen.getByRole("list", { name: "Feedback" }), "Første fejl")).queryByText("Ny")).toBeNull();
+  });
+
+  it("finds and shows markup in feedback as plain text (Principle III)", async () => {
+    const markup = "<img src=x onerror=alert(1)>";
+    const { list } = renderInbox([...fixtureTickets, makeTicket({ _id: "x1", number: 1099, description: markup })]);
+    await userEvent.type(searchField(), "<img");
+    expect(rowTitles(list)).toEqual([markup]);
+    expect(document.querySelector("img[src='x']")).toBeNull();
   });
 });

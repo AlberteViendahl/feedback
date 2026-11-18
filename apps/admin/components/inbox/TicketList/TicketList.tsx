@@ -5,14 +5,18 @@ type TicketListProps = {
   tickets: Feedback[];
   selectedId: string | null;
   now: number | null;
+  /** Picks the empty-state text: the search found nothing, or the filters did. */
+  isSearching: boolean;
   onSelect: (id: string) => void;
 };
 
-export function TicketList({ tickets, selectedId, now, onSelect }: TicketListProps) {
+export function TicketList({ tickets, selectedId, now, isSearching, onSelect }: TicketListProps) {
   return (
     <div className="inbox__scroll overflow-y-auto">
       {tickets.length === 0 ? (
-        <p className="inbox__empty">Ingen feedback matcher filtrene.</p>
+        <p className="inbox__empty">
+          {isSearching ? "Ingen feedback matcher søgningen." : "Ingen feedback matcher filtrene."}
+        </p>
       ) : (
         <ul aria-label="Feedback">
           {tickets.map((ticket) => (
