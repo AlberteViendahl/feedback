@@ -11,6 +11,7 @@
   --surface-chip: #f5f5f5;
   --surface-placeholder: #e6e6e6; /* attachment preview */
   --surface-inverse: #1a1a1a;
+  --backdrop: rgba(0, 0, 0, 0.24); /* behind the slide-in menu */
 
   /* Text */
   --text-primary: #1a1a1a;
@@ -27,6 +28,7 @@
   --divider-color: #e7e7e7;
   --divider-color-soft: #e9e9e9;
   --sidebar-edge-color: #e1e1e1;
+  --icon-button-border-color: #dcd3c4; /* round icon buttons, e.g. close menu */
 
   /* Brand */
   --brand: #4f46e5;
@@ -69,6 +71,7 @@
   --font-size-md: 14px;
   --font-size-lg: 16px;
   --font-size-display: 26px;
+  --font-size-glyph: 24px; /* ☰ menu button */
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
@@ -77,11 +80,13 @@
   --sidebar-width: 270px;
   --topbar-height: 63px;
   --page-padding: 32px;
+  --page-padding-compact: 24px; /* tablet (Figma 356:435) */
   --card-padding: 22px;
+  --drawer-width: 300px; /* slide-in menu (Figma 356:1547) */
+  --drawer-duration: 200ms;
 
   /* Feedback inbox (Figma node 323:1906) */
   --inbox-height: 769px;
-  --inbox-list-width: 520px;
   --inbox-gap: 17px;
   --inbox-toolbar-gap: 12px;
 }
@@ -417,7 +422,8 @@ body {
     font-size: var(--font-size-lg);
     color: var(--text-muted);
   }
-  .brand-pill strong {
+  .brand-pill strong,
+  .top-bar__brand strong {
     font-weight: var(--font-weight-medium);
     color: var(--brand-text);
   }
@@ -472,6 +478,16 @@ body {
     cursor: not-allowed;
   }
 
+  /* Round icon button (Figma component "Feedback/Ikonknap"). */
+  .icon-button {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--icon-button-border-color);
+    border-radius: var(--radius-pill);
+  }
+
   /* ---------- App shell: sticky full-height menu + scrolling content (spec 002, FR-001) ---------- */
 
   .app-shell {
@@ -490,6 +506,132 @@ body {
     flex: 1;
     min-width: 0;
     padding: var(--page-padding);
+  }
+
+  /* ---------- Tablet and mobile: top bar + slide-in menu (Figma 356:435, 356:1545) ---------- */
+
+  /* Only shown below the breakpoint, where the side menu becomes a drawer. */
+  .top-bar,
+  .app-shell__close,
+  .app-shell__backdrop {
+    display: none;
+  }
+
+  .top-bar {
+    align-items: center;
+    gap: 12px;
+    padding: 12px var(--page-padding-compact);
+    background: var(--surface);
+  }
+
+  .top-bar__menu-button {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background: var(--brand-soft);
+    font-size: var(--font-size-glyph);
+    line-height: 1;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .top-bar__brand {
+    display: flex;
+    flex: 1;
+    gap: 4px;
+    min-width: 0;
+    font-size: var(--font-size-lg);
+    color: var(--text-muted);
+  }
+
+  .app-shell__close {
+    position: absolute;
+    top: 6px;
+    left: 254px;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+  }
+
+  .app-shell__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background: var(--backdrop);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--drawer-duration) ease-out,
+      visibility 0s linear var(--drawer-duration);
+  }
+
+  @media (width < theme(--breakpoint-lg)) {
+    .app-shell {
+      display: block;
+    }
+
+    .top-bar {
+      display: flex;
+    }
+
+    .app-shell__content {
+      padding: var(--page-padding-compact);
+    }
+
+    /* Hidden off-screen (and out of the tab order) until opened. */
+    .app-shell__menu {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 11;
+      width: var(--drawer-width);
+      height: auto;
+      transform: translateX(-100%);
+      visibility: hidden;
+      transition:
+        transform var(--drawer-duration) ease-out,
+        visibility 0s linear var(--drawer-duration);
+    }
+
+    .app-shell__menu .side-menu {
+      width: var(--sidebar-width);
+    }
+
+    .app-shell__close {
+      display: grid;
+    }
+
+    .app-shell__backdrop {
+      display: block;
+    }
+
+    .app-shell--menu-open .app-shell__menu {
+      transform: none;
+    }
+
+    .app-shell--menu-open .app-shell__backdrop {
+      opacity: 1;
+    }
+
+    .app-shell--menu-open :is(.app-shell__menu, .app-shell__backdrop) {
+      visibility: visible;
+      transition-delay: 0s;
+    }
+
+    /* The page behind the open menu does not scroll. */
+    html:has(.app-shell--menu-open) {
+      overflow: hidden;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .app-shell__menu,
+    .app-shell__backdrop {
+      transition: none;
+    }
   }
 
   /* Centered message on pages without a Figma design (e.g. "Du er logget ud"). */
@@ -579,7 +721,7 @@ body {
     padding: 12px 12px 8px;
   }
 
-  .user-block__initial {
+  .user-avatar__initial {
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
     color: var(--text-primary);
@@ -624,10 +766,10 @@ body {
     cursor: pointer;
   }
 
-  /* The list keeps its Figma width; the detail panel takes the rest, so the inbox fills wide screens. */
+  /* The list and the detail panel share the width equally. */
   .inbox__columns {
     display: grid;
-    grid-template-columns: var(--inbox-list-width) minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--inbox-gap);
   }
 
@@ -641,6 +783,17 @@ body {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+  }
+
+  /* Tablet widths and below: the detail panel moves under the list, and both grow with their content. */
+  @media (width < theme(--breakpoint-xl)) {
+    .inbox__columns {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .inbox__panel {
+      height: auto;
+    }
   }
 
   .inbox__empty {

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Icon } from "@/components/Icons/Icon";
+import { UserAvatar } from "@/components/UserAvatar/UserAvatar";
 import type { AdminUser } from "@/lib/types";
 
 type UserBlockProps = {
@@ -10,10 +11,7 @@ type UserBlockProps = {
 export function UserBlock({ user, workspaceName }: UserBlockProps) {
   return (
     <div className="user-block">
-      <span className="icon-stack" aria-hidden="true">
-        <Icon name="user-avatar" />
-        <span className="user-block__initial">{user.name.charAt(0).toUpperCase()}</span>
-      </span>
+      <UserAvatar name={user.name} />
       <div className="min-w-0">
         <p className="user-block__name truncate-line">{user.name}</p>
         <p className="text-meta truncate-line">

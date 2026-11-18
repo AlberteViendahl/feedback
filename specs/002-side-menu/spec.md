@@ -8,6 +8,8 @@
 
 **Input**: User description: "Next feature is a side-menu. In the side-menu you can see which platforms are connected, in the screenshots, the platform examples are "GEOtracking" and "SimpleSERP". Above them you can see that it says "Organic Growth". This is the company that you are connected via. At the bottom of the sidemeny, you can see a button for "Settings" which should take you the settings-page. Under the settingsbutton you can see your username, role and the company you belong to again, and the icon is for logging out. Clicking log out should log you out immediately. Use attached screenshots for design-reference. side-menu.png is for the component itself. The other screenshots are how the component should fit into the rest of the page. For navigating, you my create empty pages that just states which page you are on. Use mock data."
 
+**Input (2026-11-18)**: User description: "The side menu should also on smaller pages collapse into a hamburger menu, which - when clicked, appears from the side smoothly. See attachments for reference."
+
 **Design reference**:
 
 - The side menu itself: [design/side-menu.png](design/side-menu.png)
@@ -16,6 +18,14 @@
   - A platform selected: [design/page-platform.png](design/page-platform.png)
   - Settings selected: [design/page-settings.png](design/page-settings.png)
 - Figma: [Keep – eksamen, "Sidemeny"](https://www.figma.com/design/Tw9qt246dOOdNdSOMXx65z/Keep---eksamen?node-id=323-2095) (node `323:2095`; also inside the page frame `323:1675`, node `323:1676`)
+- Tablet and mobile (User Story 4):
+  - Menu closed, top bar with menu button: [design/page-tablet.png](design/page-tablet.png);
+    Figma ["Admin - Organic Growth — Tablet"](https://www.figma.com/design/Tw9qt246dOOdNdSOMXx65z/Keep---eksamen?node-id=356-435)
+    (node `356:435`, top bar `356:436`)
+  - Menu open: [design/page-tablet-menu-open.png](design/page-tablet-menu-open.png);
+    Figma ["Admin - Organic Growth — Tablet — Side menu"](https://www.figma.com/design/Tw9qt246dOOdNdSOMXx65z/Keep---eksamen?node-id=356-1545)
+    (node `356:1545`, drawer `356:1547`)
+  - Mobile variants of the same: Figma nodes `356:379` (menu closed) and `356:1497` (menu open)
 
 ## Clarifications
 
@@ -31,6 +41,12 @@
 - Q: Should the web addresses of the new pages be in English or Danish? → A: English (`/`,
   `/platforms/geotracking`, `/platforms/simpleserp`, `/settings`, `/logged-out`); only readable
   text facing the user is in Danish.
+
+### Session 2026-11-18
+
+- Q: How should the side menu work on smaller screens? → A: It collapses into a menu button
+  (☰) in a top bar. Clicking the button makes the menu slide in smoothly from the side, as in
+  the Figma tablet frames (User Story 4).
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -51,8 +67,9 @@ that the current page's item is highlighted.
 
 **Acceptance Scenarios**:
 
-1. **Given** the admin is on any admin page, **When** the page loads, **Then** the side menu is
-   shown along the full height of the left edge, as in the design reference.
+1. **Given** the admin is on any admin page in a browser window at least 1024px wide, **When**
+   the page loads, **Then** the side menu is shown along the full height of the left edge, as
+   in the design reference. (Narrower windows: User Story 4.)
 2. **Given** the workspace has two connected platforms, **When** the admin looks at the menu,
    **Then** "Organic Growth" appears above a "Platforme" heading followed by GEOtracking and
    SimpleSERP, each with its own icon.
@@ -123,6 +140,41 @@ igen" leads back to the workspace page.
 
 ---
 
+### User Story 4 - Use the menu on a tablet or phone (Priority: P2)
+
+On a tablet or phone there is no room for the menu beside the page. The admin sees a top bar
+instead, with a menu button (☰), the product name "Feedback · Admin" and their avatar. Clicking
+the menu button makes the same side menu slide in smoothly from the left over the dimmed page.
+The admin can pick a page from it, or close it again.
+
+**Why this priority**: The menu stays the admin's way around the product on smaller screens,
+but desktop is the main way the admin dashboard is used.
+
+**Independent Test**: Make the browser window narrower than 1024px. Verify the top bar replaces
+the menu, open the menu with the menu button, follow a menu item, and close the menu with the
+close button, Escape and a click on the dimmed page.
+
+**Acceptance Scenarios**:
+
+1. **Given** the browser window is narrower than 1024px, **When** an admin page loads, **Then**
+   the side menu is hidden and a top bar shows the menu button, "Feedback · Admin" and the
+   admin's avatar, as in the tablet design reference.
+2. **Given** the menu is hidden, **When** the admin clicks the menu button, **Then** the menu
+   slides in from the left over the dimmed page, with a close button next to "Feedback ·
+   Admin".
+3. **Given** the menu is open, **When** the admin clicks the close button, presses Escape or
+   clicks the dimmed page, **Then** the menu slides out and the page is usable again.
+4. **Given** the menu is open, **When** the admin clicks a menu item (e.g. "GEOtracking"),
+   **Then** that page opens, the menu closes, and the item is highlighted the next time the
+   menu is opened.
+5. **Given** the menu is open, **When** the browser window is made 1024px or wider, **Then** the
+   open menu closes and the side menu is shown along the left edge as usual.
+6. **Given** the admin uses only the keyboard, **When** they open the menu with the menu
+   button, **Then** focus moves into the menu, Tab cannot reach the page behind it, and closing
+   the menu returns focus to the menu button.
+
+---
+
 ### Edge Cases
 
 - A platform has no new feedback: its count is hidden instead of showing "0 nye".
@@ -138,6 +190,12 @@ igen" leads back to the workspace page.
   bottom.
 - The admin reloads the "Du er logget ud" page or opens it directly: it shows the same page; it
   does not log anyone in or out by itself.
+- The menu is open on a small screen and the page behind is longer than the window: the page
+  does not scroll while the menu is open.
+- The admin has asked their system for reduced motion: the menu appears and disappears at once,
+  without sliding.
+- The "Du er logget ud" page on a small screen: it shows neither the top bar nor the menu
+  (FR-013).
 
 ## Requirements *(mandatory)*
 
@@ -145,10 +203,11 @@ igen" leads back to the workspace page.
 
 **Layout**
 
-- **FR-001**: Every admin page MUST show the side menu along the full height of the left edge,
-  with the page content to its right, as in the design reference. The menu MUST fill the height
-  of the browser window and stay in place when the page content scrolls, so "Indstillinger" and
-  the user block are always visible at the bottom.
+- **FR-001**: In browser windows at least 1024px wide, every admin page MUST show the side menu
+  along the full height of the left edge, with the page content to its right, as in the design
+  reference. The menu MUST fill the height of the browser window and stay in place when the
+  page content scrolls, so "Indstillinger" and the user block are always visible at the bottom.
+  Narrower windows follow FR-018 to FR-021.
 - **FR-002**: The top of the menu MUST show the product name "Feedback · Admin".
 
 **Workspace and platforms**
@@ -197,16 +256,38 @@ igen" leads back to the workspace page.
   opens the workspace page. Logging out is simulated: no real session exists, and admin pages
   stay reachable by their web address.
 
+**Tablet and mobile**
+
+- **FR-018**: In browser windows narrower than 1024px, admin pages MUST hide the side menu and
+  show a top bar instead, as in the tablet design reference: a menu button (☰), the product
+  name "Feedback · Admin" and the admin's avatar with their initial. The page content then uses
+  the full width of the window.
+- **FR-019**: Clicking the menu button MUST open the side menu as a panel that slides in
+  smoothly from the left over the page, with the page behind it dimmed. The panel MUST hold the
+  same menu as on desktop (FR-002 to FR-013), with a close button next to "Feedback · Admin".
+  If the admin's system asks for reduced motion, the panel MUST appear and disappear without
+  sliding.
+- **FR-020**: The open menu MUST close (sliding out) when the admin clicks the close button,
+  presses Escape, clicks the dimmed page, or follows any link in the menu. It MUST also close
+  when the window becomes 1024px or wider, where the side menu is shown as in FR-001.
+- **FR-021**: While the menu is open, the page behind it MUST NOT be reachable with the
+  keyboard or scrollable. Opening the menu MUST move focus into it; closing it MUST return focus
+  to the menu button. The menu button MUST tell screen readers whether the menu is open, and
+  the menu and close buttons MUST have the text labels "Åbn menu" and "Luk menu".
+
 **Accessibility, language and design**
 
 - **FR-014**: Every menu item and the log-out icon MUST be usable with the keyboard alone
   (reachable with Tab, activated with Enter), with a visible focus outline, and the log-out icon
   MUST have a text label for screen readers ("Log ud").
 - **FR-015**: All readable text facing the user MUST be in Danish (e.g. "Platforme",
-  "Indstillinger", "4 nye", "Log ud"). Names of the product, workspace, platforms and user are
-  shown as they are. Web addresses are not user-facing text and stay in English (FR-011).
-- **FR-016**: The visual design MUST match the design reference and use only the project's
-  existing design tokens.
+  "Indstillinger", "4 nye", "Log ud", "Åbn menu", "Luk menu"). Names of the product, workspace,
+  platforms and user are shown as they are. Web addresses are not user-facing text and stay in
+  English (FR-011).
+- **FR-016**: The visual design MUST match the design reference and use the project's design
+  tokens. A value the design needs that the tokens lack (e.g. the dimmed backdrop color and the
+  menu panel width on small screens) MUST be taken from Figma and added as a token
+  (Constitution Principle I).
 
 ### Key Entities
 
@@ -232,6 +313,11 @@ igen" leads back to the workspace page.
 - **SC-007**: After opening an unread ticket, the menu counts are updated before the admin can
   look back at the menu (no noticeable delay, under 0.5 seconds), in 100% of checks.
 - **SC-006**: An admin using only the keyboard can reach and use every menu item and log out.
+- **SC-008**: In a browser window 834px wide (the Figma tablet frame), the top bar and the open
+  menu show no differences from the tablet design reference in color, spacing, typography or
+  layout beyond the agreed Danish wording and the mock-data counts.
+- **SC-009**: On a small screen, the admin can reach any page in two clicks (menu button, then
+  menu item), and the menu slides fully in or out within 0.2 seconds, in 100% of checks.
 
 ## Assumptions
 
@@ -249,5 +335,9 @@ igen" leads back to the workspace page.
   GEOtracking instead of 8).
 - There is no real login yet. Logging out is simulated (FR-013); protecting admin pages from
   logged-out users comes with real authentication.
-- The design is for desktop screens; small-screen layouts (e.g. a collapsible menu) are out of
-  scope.
+- Windows narrower than 1024px count as small screens (User Story 4); this covers tablets
+  in portrait and phones. The tablet frames (834px wide) are the reference. The mobile frames
+  (390px) show the same top bar and menu but with 16px instead of 24px side padding; that
+  difference is not in scope, so small screens all use the tablet's 24px.
+- The search field below the top bar in the tablet and mobile frames is part of the separate
+  search feature, as on desktop.
