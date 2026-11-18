@@ -15,6 +15,8 @@ export type InboxView = {
   selectedId: string | null;
   replyDraft: string;
   notice: InboxNotice;
+  /** The search text exactly as typed (spec 003); see lib/inbox/search.ts. */
+  search: string;
 };
 
 export type InboxViewAction =
@@ -23,6 +25,8 @@ export type InboxViewAction =
   | { type: "setCategoryFilter"; value: CategoryFilter }
   | { type: "setSortOrder"; value: SortOrder }
   | { type: "editReply"; text: string }
+  | { type: "setSearch"; value: string }
+  | { type: "reset" }
   | { type: "showNotice"; notice: Exclude<InboxNotice, null> };
 
 export const STANDARD_REPLY =
@@ -36,6 +40,7 @@ export function createInitialView(): InboxView {
     selectedId: null,
     replyDraft: STANDARD_REPLY,
     notice: null,
+    search: "",
   };
 }
 
@@ -51,7 +56,11 @@ export function inboxViewReducer(view: InboxView, action: InboxViewAction): Inbo
       return { ...view, sortOrder: action.value };
     case "editReply":
       return { ...view, replyDraft: action.text };
+    case "setSearch":
+      return { ...view, search: action.value };
     case "showNotice":
       return { ...view, notice: action.notice };
+    case "reset":
+      return createInitialView();
   }
 }

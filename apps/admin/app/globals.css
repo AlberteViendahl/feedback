@@ -78,7 +78,8 @@
 
   /* Layout */
   --sidebar-width: 270px;
-  --topbar-height: 63px;
+  --search-bar-height: 63px; /* inbox search bar (Figma 323:1707) */
+  --search-width: 420px; /* search field (Figma 323:1709) */
   --page-padding: 32px;
   --page-padding-compact: 24px; /* tablet (Figma 356:435) */
   --card-padding: 22px;
@@ -224,8 +225,14 @@ body {
     border-right: 1px solid var(--sidebar-edge-color);
   }
 
-  .topbar {
-    height: var(--topbar-height);
+  /* Inbox search bar (Figma 323:1707). The negative margins cancel the content padding so the
+     bar runs edge to edge; the field sits 11px from the top (Figma 323:1709). */
+  .search-bar {
+    display: flex;
+    align-items: flex-start;
+    height: var(--search-bar-height);
+    margin: calc(var(--page-padding) * -1) calc(var(--page-padding) * -1) var(--page-padding);
+    padding: 11px var(--page-padding) 0;
     background: var(--surface);
     border-bottom: 1px solid var(--border-color);
   }
@@ -311,7 +318,23 @@ body {
     cursor: pointer;
   }
 
+  /* Positions the search icon over the input (Figma 323:1709, 323:1710). */
+  .search-field {
+    position: relative;
+    display: block;
+    width: var(--search-width);
+    max-width: 100%;
+  }
+  .search-field__icon {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
   .search-input {
+    width: 100%;
     height: 39px;
     padding: 0 16px 0 42px;
     background: var(--surface-sunken);
@@ -322,6 +345,11 @@ body {
   }
   .search-input::placeholder {
     color: var(--text-subtle);
+  }
+  /* No native clear button: not in the design, and Firefox has none (research R5). */
+  .search-input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
   }
 
   .textarea {
@@ -580,6 +608,30 @@ body {
 
     .app-shell__content {
       padding: var(--page-padding-compact);
+    }
+
+    /* The inbox search field sits right under the top bar, full width and without a border.
+       Measured from page-tablet.png, the export of Figma 356:435 (spec 003, research R7). */
+    .search-bar {
+      height: auto;
+      margin: calc(var(--page-padding-compact) * -1) calc(var(--page-padding-compact) * -1)
+        var(--page-padding-compact);
+      padding: 0 var(--page-padding-compact) 12px;
+      border-bottom: 0;
+    }
+
+    .search-field {
+      width: 100%;
+    }
+
+    .search-field__icon {
+      left: 13px;
+    }
+
+    .search-input {
+      height: 41px;
+      padding-left: 36px;
+      border-color: transparent;
     }
 
     /* Hidden off-screen (and out of the tab order) until opened. */

@@ -35,13 +35,15 @@ describe("Inbox – keyboard only", () => {
       </TicketsProvider>,
     );
 
+    const search = screen.getByRole("searchbox", { name: "Søg i feedback" });
     const all = screen.getByRole("button", { name: "Alle 5" });
     const done = screen.getByRole("button", { name: "Færdig 2" });
     const category = screen.getByRole("combobox", { name: /Kategori/ });
     const sort = screen.getByRole("button", { name: "Nyeste først" });
 
     const visited = await tabTo(sort);
-    expect(visited).toEqual([all, done, category, sort]);
+    // The search field comes first (spec 003, FR-016).
+    expect(visited).toEqual([search, all, done, category, sort]);
 
     // Space on the sort toggle.
     await userEvent.keyboard(" ");

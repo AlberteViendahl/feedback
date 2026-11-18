@@ -131,7 +131,9 @@ function inboxViewReducer(view: InboxView, action: InboxViewAction): InboxView
 // lib/inbox/select.ts  (now take tickets and view separately)
 function getVisibleTickets(tickets: Feedback[], view: InboxView): Feedback[]
 function getSelectedTicket(tickets: Feedback[], view: InboxView): Feedback | null
-function getCounts(tickets: Feedback[], category: CategoryFilter): { all: number; done: number }  // unchanged
+function getCounts(tickets: Feedback[], category: CategoryFilter): { all: number; done: number }  // unchanged here
+// Spec 003 adds InboxView.search and changes getCounts to (tickets, { categoryFilter, search }):
+// see ../../003-search-top-bar/contracts/components.md
 
 // lib/platforms.ts
 const PLATFORMS: readonly Platform[]

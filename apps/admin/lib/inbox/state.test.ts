@@ -10,6 +10,7 @@ describe("createInitialView", () => {
       selectedId: null,
       replyDraft: STANDARD_REPLY,
       notice: null,
+      search: "",
     });
   });
 });
@@ -29,6 +30,21 @@ describe("inboxViewReducer", () => {
     expect(view).toMatchObject({ statusFilter: "done", categoryFilter: "idea", sortOrder: "oldest" });
   });
 
+  it("stores the search exactly as typed and changes nothing else", () => {
+    const before = { ...createInitialView(), selectedId: "t1", statusFilter: "done" as const };
+    const view = inboxViewReducer(before, { type: "setSearch", value: "  anna " });
+    expect(view).toEqual({ ...before, search: "  anna " });
+  });
+
+  it("keeps the search when selecting a ticket or changing filters", () => {
+    let view = inboxViewReducer(createInitialView(), { type: "setSearch", value: "anna" });
+    view = inboxViewReducer(view, { type: "select", id: "t1" });
+    view = inboxViewReducer(view, { type: "setStatusFilter", value: "done" });
+    view = inboxViewReducer(view, { type: "setCategoryFilter", value: "bug" });
+    view = inboxViewReducer(view, { type: "setSortOrder", value: "oldest" });
+    expect(view.search).toBe("anna");
+  });
+
   it("edits the reply draft", () => {
     const view = inboxViewReducer(createInitialView(), { type: "editReply", text: "Hej" });
     expect(view.replyDraft).toBe("Hej");
@@ -37,6 +53,14 @@ describe("inboxViewReducer", () => {
   it("shows a notice", () => {
     const view = inboxViewReducer(createInitialView(), { type: "showNotice", notice: "issue-created" });
     expect(view.notice).toBe("issue-created");
+  });
+
+  it("resets everything to the initial view", () => {
+    let view = inboxViewReducer(createInitialView(), { type: "setSearch", value: "anna" });
+    view = inboxViewReducer(view, { type: "select", id: "t1" });
+    view = inboxViewReducer(view, { type: "setStatusFilter", value: "done" });
+    view = inboxViewReducer(view, { type: "editReply", text: "kladde" });
+    expect(inboxViewReducer(view, { type: "reset" })).toEqual(createInitialView());
   });
 
   it("does not mutate the previous view", () => {
