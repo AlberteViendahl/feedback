@@ -1,18 +1,19 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 → 1.1.0 (MINOR: materially expanded guidance)
+- Version change: 1.1.0 → 1.2.0 (MINOR: materially expanded guidance)
 - Modified principles:
-  - VI. Tested Logic and Components (title unchanged): component tests now use Testing
-    Library (@testing-library/react) on jsdom
+  - I. Design Fidelity (title unchanged): pages that the spec explicitly marks as placeholders
+    may be built without a Figma design, using only existing tokens and classes from
+    `apps/admin/app/globals.css`
 - Modified sections:
-  - Technology & Project Constraints: Testing is now Vitest + Testing Library + jsdom
-  - Development Workflow & Quality Gates: `/speckit-clarify` added after `/speckit-specify`
+  - Development Workflow & Quality Gates: the Figma-reference requirement for specs now
+    excludes pages explicitly marked as placeholders (Principle I)
 - Added sections: none
 - Removed sections: none
 - Templates checked (not modified by this command; they read the constitution at runtime):
   - .specify/templates/plan-template.md ✅ "Constitution Check" gate applies as-is
   - .specify/templates/spec-template.md ✅ no conflict
-  - .specify/templates/tasks-template.md ✅ no conflict; test tasks required by Principle VI
+  - .specify/templates/tasks-template.md ✅ no conflict
 - Follow-up TODOs: none
 -->
 
@@ -38,9 +39,14 @@ and handles it in an admin dashboard. The code lives in the `feedback` monorepo:
   added to `globals.css` as a token in the same change, never hard-coded in a component.
 - Figma governs visual design. UI copy MUST be in Danish (see Technology & Project
   Constraints), even where a Figma frame shows English text.
+- Exception: a page that its spec explicitly marks as a placeholder MAY be built without a
+  Figma design. Such a page MUST use only existing tokens and classes from
+  `apps/admin/app/globals.css` and MUST NOT add new ones. This is not a deviation and needs no
+  Complexity Tracking entry.
 
 **Rationale**: One visual source of truth keeps the product consistent and makes design changes
-a single-file edit.
+a single-file edit. Placeholder pages built only from existing classes stay inside that system
+without waiting for a design.
 
 ### II. Single Source of Data Types
 
@@ -115,7 +121,7 @@ Convex swap) safe.
 - Features follow the Spec Kit flow: `/speckit-specify` → `/speckit-clarify` → `/speckit-plan`
   → `/speckit-tasks` → `/speckit-implement`.
 - Each spec MUST reference the Figma design (screenshot or Figma link) for any UI it
-  introduces.
+  introduces, except pages it explicitly marks as placeholders (Principle I).
 - Each plan MUST pass the Constitution Check against all six principles, and MUST list any new
   dependency with its justification (Principle IV).
 - Before a change is considered done: `npm run lint`, type checking (`tsc --noEmit` or
@@ -134,4 +140,4 @@ Convex swap) safe.
   recorded in the plan's Complexity Tracking table with its justification, or it is not allowed.
 - Runtime development guidance for the admin app lives in `apps/admin/AGENTS.md`.
 
-**Version**: 1.1.0 | **Ratified**: 2026-11-17 | **Last Amended**: 2026-11-17
+**Version**: 1.2.0 | **Ratified**: 2026-11-17 | **Last Amended**: 2026-11-18

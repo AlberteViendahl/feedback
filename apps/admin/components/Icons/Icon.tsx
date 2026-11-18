@@ -27,6 +27,7 @@ const ICONS = {
   "nav-search": { width: 12.8833, height: 12.8833 },
   "workspace-avatar": { width: 28, height: 28 },
   "user-avatar": { width: 30, height: 30 },
+  close: { width: 14, height: 14 },
 } as const;
 
 export type IconName = keyof typeof ICONS;

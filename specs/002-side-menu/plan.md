@@ -53,7 +53,7 @@ All items resolved; no NEEDS CLARIFICATION remain ([research.md](research.md)).
 
 | Principle | Check | Pre-research | Post-design |
 |-----------|-------|--------------|-------------|
-| I. Design Fidelity | Menu follows Figma `323:2095` and the four screenshots; reuses `.sidebar`, `.brand-pill`, `.nav-item`, `.avatar`, `.divider`; missing spacing measured in Figma and added to `globals.css`; icons downloaded from Figma ([R9](research.md#r9-visual-design-and-assets)). Pages without a design use existing classes only | ✅ | ✅ (one recorded deviation: pages without a design, see Complexity Tracking) |
+| I. Design Fidelity | Menu follows Figma `323:2095` and the four screenshots; reuses `.sidebar`, `.brand-pill`, `.nav-item`, `.avatar`, `.divider`; missing spacing measured in Figma and added to `globals.css`; icons downloaded from Figma ([R9](research.md#r9-visual-design-and-assets)). Platform and settings pages are placeholders under the spec (FR-008, FR-009) and use existing classes only, as Principle I allows | ✅ | ✅ (one recorded deviation: not-found and logged-out pages without a design, see Complexity Tracking) |
 | II. Single Source of Data Types | `Workspace`, `AdminUser` added to `lib/types.ts`; `Platform` stays there; platform labels moved to shared `lib/platforms.ts` ([data-model.md](data-model.md)) | ✅ | ✅ |
 | III. Untrusted Feedback Content | The menu shows no feedback content; counts are numbers. Existing inbox rules unchanged | ✅ | ✅ |
 | IV. Simplicity | No new dependencies; React context instead of a state library; links instead of router logic ([R1](research.md#r1-sharing-ticket-state-between-the-menu-and-the-inbox), [R6](research.md#r6-links-and-log-out)) | ✅ | ✅ |
@@ -62,7 +62,8 @@ All items resolved; no NEEDS CLARIFICATION remain ([research.md](research.md)).
 | Tech constraints | TypeScript strict, npm, Danish user-facing text ([R10](research.md#r10-danish-copy-and-page-titles)), English URLs and code, Next.js docs consulted (R3–R6) | ✅ | ✅ |
 | Quality gates | `npm run lint`, `npx tsc --noEmit`, `npx vitest run`, `npm run build` | ✅ | ✅ |
 
-One recorded deviation from Principle I (pages without a Figma design); see Complexity Tracking.
+One recorded deviation from Principle I (not-found and logged-out pages without a Figma design);
+see Complexity Tracking.
 
 ## Project Structure
 
@@ -144,4 +145,4 @@ selectors change, and spec 001's contract document is updated to match.
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| The platform, settings, not-found and "Du er logget ud" pages have no Figma design (Principle I) | The spec asks for placeholder pages that only state which page the admin is on (user input: "empty pages that just states which page you are on"), and for a log-out destination | Waiting for designs would block navigation and log-out. The pages use only existing classes (`.text-display`, `.text-subtitle`, `.card`, `.button`) and add no new values, and they will be replaced when each page gets its own feature |
+| The not-found and "Du er logget ud" pages have no Figma design (Principle I) | The spec asks for a log-out destination (FR-013) and pages for unknown addresses, and the spec does not mark them as placeholders | Waiting for designs would block log-out and leave unknown addresses without a Danish page. The pages use only existing classes (`.text-display`, `.text-subtitle`, `.card`, `.button`) and add no new values |

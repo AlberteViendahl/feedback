@@ -32,4 +32,16 @@ describe("AdminLayout", () => {
     );
     expect(screen.getByRole("link", { name: /Organic Growth/ }).textContent).toContain("4 nye");
   });
+
+  it("gives tablet and mobile a menu button that opens the side menu", () => {
+    render(
+      <AdminLayout params={Promise.resolve({})}>
+        <p>Indhold</p>
+      </AdminLayout>,
+    );
+
+    const aside = screen.getByRole("navigation", { name: "Hovedmenu" }).closest("aside");
+    const button = screen.getByRole("button", { name: "Åbn menu" });
+    expect(button.getAttribute("aria-controls")).toBe(aside?.id);
+  });
 });
