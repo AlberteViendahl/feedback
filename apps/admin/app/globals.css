@@ -80,7 +80,6 @@
   --card-padding: 22px;
 
   /* Feedback inbox (Figma node 323:1906) */
-  --inbox-width: 1106px;
   --inbox-height: 769px;
   --inbox-list-width: 520px;
   --inbox-gap: 17px;
@@ -607,7 +606,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: var(--inbox-toolbar-gap);
-    max-width: var(--inbox-width);
   }
 
   .inbox__toolbar {
@@ -626,6 +624,7 @@ body {
     cursor: pointer;
   }
 
+  /* The list keeps its Figma width; the detail panel takes the rest, so the inbox fills wide screens. */
   .inbox__columns {
     display: grid;
     grid-template-columns: var(--inbox-list-width) minmax(0, 1fr);
