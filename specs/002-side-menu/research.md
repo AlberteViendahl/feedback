@@ -29,6 +29,10 @@ dates, Figma icons via `next/image`, Vitest setup, tokens in `globals.css`) stil
   too (rejected by clarification Q1); a state library such as Zustand (new dependency for
   something React context covers, Constitution IV); `sessionStorage` (survives reloads, which the
   spec says must restore mock data).
+- **Changed by spec 004 (2026-11-22)**: the tickets now live in a Zustand store,
+  `lib/tickets/store.ts`, with no provider. The rejection of Zustand above is superseded: spec
+  004 requires ticket data without a wrapper, and the logged-out page must be able to clear it.
+  See [spec 004 research R1](../004-zustand-ticket-store/research.md#r1-adding-zustand-constitution-principle-iv).
 
 ## R2. Keeping components prop-driven with a provider (Constitution V)
 
@@ -41,6 +45,14 @@ dates, Figma icons via `next/image`, Vitest setup, tokens in `globals.css`) stil
   only code that changes when Convex arrives (`useQuery`/`useMutation` instead of `useTickets`).
 - **Alternatives considered**: Calling `useTickets()` inside `Inbox` and `SideMenu` directly
   (couples them to the provider and forces provider wrappers in every component test).
+- **Changed by spec 004 (2026-11-22)**:
+  - The containers now read the store (`useTicketsStore`) instead of `useTickets()`, and pass
+    its actions as callbacks.
+  - The mock tickets now enter in `lib/tickets/store.ts`. The layout still hands the workspace
+    and user to the menu.
+  - Presentational components stay prop-driven. See
+    [spec 004 research R3](../004-zustand-ticket-store/research.md#r3-store-shape-and-actions)
+    and [R4](../004-zustand-ticket-store/research.md#r4-where-the-mock-data-enters).
 
 ## R3. Routes, route group and layout
 
@@ -55,6 +67,12 @@ dates, Figma icons via `next/image`, Vitest setup, tokens in `globals.css`) stil
   page reloads between groups (the caveat only applies to multiple root layouts).
 - **Alternatives considered**: Rendering the menu in the root layout and hiding it on
   `/logged-out` with a pathname check (mixes concerns, needs client code in the root layout).
+- **Corrected by spec 004 (2026-11-22)**:
+  - Leaving the group does *not* unmount the provider. With Cache Components, Next.js hides the
+    group's layout with `<Activity>`, so ticket changes survived logging out. This was checked in
+    the browser.
+  - The tickets now live in a store, and the logged-out page clears it with `ResetTickets`. See
+    [spec 004 research R5](../004-zustand-ticket-store/research.md#r5-clearing-ticket-changes-on-log-out-fr-008).
 
 ## R4. Platform pages with Cache Components
 
@@ -165,3 +183,8 @@ Titles use the Metadata API's `title.template` in the root layout and `metadata`
   promise. `npm run build` and the quickstart still cover what jsdom cannot (layout, stickiness).
   Rendering async Server Components through React itself is not supported by Vitest (bundled
   Vitest guide), hence calling the platform page as a function.
+- **Changed by spec 004 (2026-11-22)**:
+  - The container tests no longer render inside `TicketsProvider`. They set their tickets with
+    `useTicketsStore.setState({ tickets })`.
+  - `vitest.setup.ts` resets the store after every test. See
+    [spec 004 research R6](../004-zustand-ticket-store/research.md#r6-test-isolation-fr-010).

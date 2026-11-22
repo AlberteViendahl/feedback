@@ -33,6 +33,10 @@ data:
 </TicketsProvider>
 ```
 
+> **Changed by spec 004 (2026-11-22):** the layout has no `TicketsProvider` and no longer imports
+> `mockFeedback`. The mock tickets enter in `lib/tickets/store.ts`. See
+> [spec 004's contract](../../004-zustand-ticket-store/contracts/components.md#pages-and-layout-changed).
+
 ## Ticket state (`components/TicketsProvider/TicketsProvider.tsx`, `"use client"`)
 
 ```ts
@@ -41,6 +45,10 @@ function TicketsProvider(props: TicketsProviderProps): JSX.Element
 function useTickets(): { tickets: Feedback[]; dispatch: (action: TicketAction) => void }
 // throws a clear error when used outside TicketsProvider
 ```
+
+> **Removed by spec 004 (2026-11-22):** replaced by the Zustand store `lib/tickets/store.ts`
+> (`useTicketsStore`, `markRead`, `sendReply`, `createIssue`, `resetTickets`). See
+> [spec 004's contract](../../004-zustand-ticket-store/contracts/components.md#ticket-store-libticketsstorets-new).
 
 ## Side menu (`components/side-menu/`)
 
@@ -102,6 +110,10 @@ type InboxProps = {
 
 Sub-components of the inbox (`Toolbar`, `TicketList`, `TicketRow`, `TicketDetail`, …) do not
 change.
+
+> **Changed by spec 004 (2026-11-22):** `InboxContainer` and `SideMenuContainer` read the
+> ticket store instead of `useTickets()`. `InboxProps` is unchanged. See
+> [spec 004's contract](../../004-zustand-ticket-store/contracts/components.md#containers-changed).
 
 ## Pure functions
 

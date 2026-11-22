@@ -65,6 +65,11 @@ All items resolved; no NEEDS CLARIFICATION remain ([research.md](research.md)).
 One recorded deviation from Principle I (not-found and logged-out pages without a Figma design);
 see Complexity Tracking.
 
+> **Changed by spec 004 (2026-11-22):** the "React context instead of a state library" choice
+> under Principle IV was reversed. The tickets now live in a Zustand store, justified in
+> [spec 004's plan](../004-zustand-ticket-store/plan.md#new-dependencies-constitution-iv), and
+> `components/TicketsProvider/` was removed.
+
 ## Project Structure
 
 ### Documentation (this feature)
@@ -138,6 +143,12 @@ apps/admin/
 001 (main component at the feature folder root, one folder per sub-component, no `index.ts`).
 The inbox's components below `Inbox` are untouched; only `Inbox`, its state module and its
 selectors change, and spec 001's contract document is updated to match.
+
+> **Changed by spec 004 (2026-11-22):**
+>
+> - `components/TicketsProvider/` no longer exists. The containers read `lib/tickets/store.ts`.
+> - The layout no longer imports the mock tickets.
+> - `components/ResetTickets/` clears the store on the logged-out page.
 
 ## Complexity Tracking
 

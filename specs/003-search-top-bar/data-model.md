@@ -37,7 +37,8 @@ search text per ticket. Neither is stored.
 - Typing dispatches `setSearch` with the field's full value. Escape in a non-empty field
   dispatches `setSearch` with `""` (FR-013).
 - Searching never dispatches to `TicketsProvider`, so ticket data and the side-menu counts are
-  untouched (FR-014).
+  untouched (FR-014). *Since spec 004, this means it calls no action of the ticket store
+  (`lib/tickets/store.ts`).*
 
 ## Search words (derived, `lib/inbox/search.ts`)
 

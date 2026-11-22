@@ -71,6 +71,15 @@ menu (FR-006) while resetting the view on navigation (FR-017), the state is spli
 | **Tickets** | `TicketsProvider` in `app/(admin)/layout.tsx` | Whole admin session, across page navigation; reset on reload or after logging out | `Feedback[]` |
 | **Inbox view** | `Inbox` component | While the inbox page is shown; reset when it remounts | `statusFilter`, `categoryFilter`, `sortOrder`, `selectedId`, `replyDraft`, `notice` |
 
+> **Changed by spec 004 (2026-11-22):**
+>
+> - The tickets' owner is now the Zustand store `lib/tickets/store.ts`, not `TicketsProvider`.
+>   The tickets still reset on reload.
+> - On logging out, the store is cleared when the admin arrives at `/logged-out`. The provider was
+>   never unmounted there.
+>
+> See [spec 004's data model](../004-zustand-ticket-store/data-model.md).
+
 ### Ticket actions (`lib/tickets/state.ts`, moved from `lib/inbox/state.ts`)
 
 Same rules as spec 001's data model, now addressed by ticket id:

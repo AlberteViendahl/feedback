@@ -13,6 +13,10 @@ mock data is replaced by Convex queries (Constitution V). Types refer to
 > `app/(admin)/layout.tsx`; `app/(admin)/page.tsx` renders `<InboxContainer />`, which passes
 > `tickets` and ticket callbacks to `Inbox`. See [spec 002 contracts](../../002-side-menu/contracts/components.md#inbox-changes-spec-001-contract--this-feature)
 > and [spec 002 data model](../../002-side-menu/data-model.md#state-split-changes-the-inbox-from-spec-001).
+>
+> **Changed by spec 004 (2026-11-22):** `TicketsProvider` is gone. `InboxContainer` reads the
+> Zustand store `lib/tickets/store.ts`, which also holds the mock tickets. See
+> [spec 004 contracts](../../004-zustand-ticket-store/contracts/components.md#containers-changed).
 
 ```ts
 // apps/admin/app/page.tsx (Server Component)
