@@ -110,6 +110,10 @@ There is no transition back to `open`, and `done` is final in this feature.
 > **Superseded by spec 002:** this state is now split into ticket data (shared via
 > `TicketsProvider`, kept across pages) and the inbox view (local to `Inbox`, reset on remount).
 > See [spec 002 data model](../002-side-menu/data-model.md#state-split-changes-the-inbox-from-spec-001).
+>
+> **Changed by spec 004 (2026-11-22):** the shared ticket data now lives in the Zustand store
+> `lib/tickets/store.ts` instead of `TicketsProvider`. See
+> [spec 004 data model](../004-zustand-ticket-store/data-model.md).
 
 Held by the `Inbox` container (see [contracts/components.md](contracts/components.md)).
 

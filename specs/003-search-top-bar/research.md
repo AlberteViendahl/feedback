@@ -7,7 +7,9 @@ Checked against the installed Next.js 16.4.6 docs in `apps/admin/node_modules/ne
 
 - Figma icons are loaded via `next/image` and tokens live in `globals.css` (spec 001).
 - Ticket data lives in `TicketsProvider`, while the inbox keeps its own view state, which
-  resets on remount (spec 002, R1).
+  resets on remount (spec 002, R1). *Changed by spec 004 (2026-11-22): ticket data now lives in
+  the Zustand store `lib/tickets/store.ts`
+  ([spec 004 research R1](../004-zustand-ticket-store/research.md#r1-adding-zustand-constitution-principle-iv)).*
 - The breakpoint is 1024px (spec 002, User Story 4).
 
 ## R1. Where the search text lives
@@ -26,7 +28,8 @@ Checked against the installed Next.js 16.4.6 docs in `apps/admin/node_modules/ne
   - A separate `useState` in `Inbox`. Rejected: it would split the view state across two
     places, and the tests for the pure reducer would no longer cover it.
   - Put it in `TicketsProvider`. Rejected: the provider lives in the layout and survives
-    navigation, which breaks FR-015.
+    navigation, which breaks FR-015. *Spec 004 replaced the provider with a store that also
+    survives navigation, so the same reasoning applies to the store.*
 
 ## R2. How tickets are matched
 
@@ -230,7 +233,10 @@ spaces shows the filter message.
     `useLayoutEffect(() => () => dispatch({ type: "reset" }), [])`.
   - React runs the cleanup when Activity hides the page, and on unmount, so the view is back to
     its defaults before the page is shown again.
-  - Ticket changes live in `TicketsProvider` and are not affected.
+  - Ticket changes live in `TicketsProvider` and are not affected. *Since spec 004 they live in
+    the ticket store (`lib/tickets/store.ts`). The same Activity behaviour also kept the admin
+    layout alive after logging out, which spec 004 fixed
+    ([research R5](../004-zustand-ticket-store/research.md#r5-clearing-ticket-changes-on-log-out-fr-008)).*
 - **Rationale**:
   - This is the pattern the docs recommend for state that should reset ("When to reset it").
   - `useLayoutEffect` runs before the page is hidden, so no stale view flashes on return.

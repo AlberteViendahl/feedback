@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { at, fixtureTickets } from "@/lib/inbox/test-fixtures";
-import { TicketsProvider } from "@/components/TicketsProvider/TicketsProvider";
+import { useTicketsStore } from "@/lib/tickets/store";
 import { InboxContainer } from "./InboxContainer";
 
 // FR-024 / SC-008: everything is reachable with Tab and works with Enter or Space.
@@ -29,11 +29,8 @@ async function tabTo(target: HTMLElement, maxSteps = 30) {
 
 describe("Inbox – keyboard only", () => {
   it("reaches the controls in visual order and operates them", async () => {
-    render(
-      <TicketsProvider initialTickets={fixtureTickets}>
-        <InboxContainer />
-      </TicketsProvider>,
-    );
+    useTicketsStore.setState({ tickets: fixtureTickets });
+    render(<InboxContainer />);
 
     const search = screen.getByRole("searchbox", { name: "Søg i feedback" });
     const all = screen.getByRole("button", { name: "Alle 5" });
@@ -72,11 +69,8 @@ describe("Inbox – keyboard only", () => {
   });
 
   it("switches the status filter with Enter", async () => {
-    render(
-      <TicketsProvider initialTickets={fixtureTickets}>
-        <InboxContainer />
-      </TicketsProvider>,
-    );
+    useTicketsStore.setState({ tickets: fixtureTickets });
+    render(<InboxContainer />);
     const done = screen.getByRole("button", { name: "Færdig 2" });
     await tabTo(done);
     await userEvent.keyboard("{Enter}");

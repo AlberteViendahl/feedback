@@ -1,5 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { mockFeedback } from "@/lib/mock-feedback";
+import { markRead, useTicketsStore } from "@/lib/tickets/store";
 import LoggedOutPage, { metadata } from "./page";
 
 describe("logged-out page", () => {
@@ -16,5 +18,11 @@ describe("logged-out page", () => {
 
   it("has its own page title", () => {
     expect(metadata.title).toBe("Logget ud");
+  });
+
+  it("clears the session's ticket changes (spec 004, FR-008)", () => {
+    markRead(mockFeedback.find((ticket) => !ticket.isRead)!._id);
+    render(<LoggedOutPage />);
+    expect(useTicketsStore.getState().tickets).toBe(mockFeedback);
   });
 });

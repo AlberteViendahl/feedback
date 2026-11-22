@@ -1,17 +1,17 @@
 "use client";
 
-import { useTickets } from "@/components/TicketsProvider/TicketsProvider";
+import { createIssue, markRead, sendReply, useTicketsStore } from "@/lib/tickets/store";
 import { Inbox } from "./Inbox";
 
-/** Connects the inbox to the shared ticket data. With Convex, swap useTickets() for queries. */
+/** Connects the inbox to the shared ticket store. With Convex, swap the store for queries. */
 export function InboxContainer() {
-  const { tickets, dispatch } = useTickets();
+  const tickets = useTicketsStore((state) => state.tickets);
   return (
     <Inbox
       tickets={tickets}
-      onOpenTicket={(id) => dispatch({ type: "markRead", id })}
-      onSendReply={(id, text, now) => dispatch({ type: "sendReply", id, text, now })}
-      onCreateIssue={(id) => dispatch({ type: "createIssue", id })}
+      onOpenTicket={markRead}
+      onSendReply={sendReply}
+      onCreateIssue={createIssue}
     />
   );
 }

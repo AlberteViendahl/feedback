@@ -1,9 +1,10 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { InboxContainer } from "@/components/inbox/InboxContainer";
-import { TicketsProvider } from "@/components/TicketsProvider/TicketsProvider";
+import { ResetTickets } from "@/components/ResetTickets/ResetTickets";
 import { at, makeTicket } from "@/lib/inbox/test-fixtures";
+import { resetTickets, useTicketsStore } from "@/lib/tickets/store";
 import type { AdminUser, Feedback, Platform, Workspace } from "@/lib/types";
 import { SideMenuContainer } from "./SideMenuContainer";
 
@@ -32,12 +33,16 @@ const tickets = [
   ticket("c", "Søgning er langsom", "simpleserp", 9),
 ];
 
+beforeEach(() => {
+  useTicketsStore.setState({ tickets });
+});
+
 function app(inboxKey = "first") {
   return (
-    <TicketsProvider initialTickets={tickets}>
+    <>
       <SideMenuContainer workspace={workspace} user={user} />
       <InboxContainer key={inboxKey} />
-    </TicketsProvider>
+    </>
   );
 }
 
@@ -79,7 +84,7 @@ describe("side menu and inbox together", () => {
     await userEvent.click(screen.getByRole("button", { name: /^Færdig \d/ }));
     expect(screen.getByRole("button", { name: /^Færdig \d/ }).getAttribute("aria-pressed")).toBe("true");
 
-    // Same provider, new inbox: like going to another page and back.
+    // Same store, new inbox: like going to another page and back.
     rerender(app("second"));
 
     expect(screen.getByRole("button", { name: /^Alle \d/ }).getAttribute("aria-pressed")).toBe("true");
@@ -89,5 +94,27 @@ describe("side menu and inbox together", () => {
 
     await userEvent.click(row("Eksport fejler"));
     expect(screen.getByRole("heading", { name: /^Sendt svar · / })).toBeTruthy();
+  });
+
+  it("log-out clears ticket changes (spec 004, US3-1)", async () => {
+    // Log-out goes back to the mock data, so start from it rather than this file's tickets.
+    resetTickets();
+    const { rerender } = render(app());
+    const addWebsite = () => screen.getByText(/nothing happens/).closest("button") as HTMLButtonElement;
+    await userEvent.click(addWebsite());
+    expect(menuItem(/Organic Growth/).textContent).toContain("3 nye");
+    expect(menuItem(/GEOtracking/).textContent).toContain("2 nye");
+
+    // As arriving at the logged-out page does.
+    rerender(
+      <>
+        {app()}
+        <ResetTickets />
+      </>,
+    );
+
+    expect(menuItem(/Organic Growth/).textContent).toContain("4 nye");
+    expect(menuItem(/GEOtracking/).textContent).toContain("3 nye");
+    expect(within(addWebsite()).getByText("Ny")).toBeTruthy();
   });
 });
