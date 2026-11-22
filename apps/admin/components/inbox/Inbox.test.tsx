@@ -3,7 +3,7 @@ import { Activity } from "react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { at, fixtureTickets, makeTicket } from "@/lib/inbox/test-fixtures";
-import { TicketsProvider } from "@/components/TicketsProvider/TicketsProvider";
+import { useTicketsStore } from "@/lib/tickets/store";
 import { InboxContainer } from "./InboxContainer";
 
 // Only the system clock is faked (no fake timers), so userEvent keeps working.
@@ -16,11 +16,8 @@ afterEach(() => {
 });
 
 function renderInbox(tickets = fixtureTickets) {
-  render(
-      <TicketsProvider initialTickets={tickets}>
-        <InboxContainer />
-      </TicketsProvider>,
-    );
+  useTicketsStore.setState({ tickets });
+  render(<InboxContainer />);
   return { list: screen.getByRole("list", { name: "Feedback" }) };
 }
 
@@ -284,18 +281,11 @@ describe("Inbox – searching (spec 003, US1)", () => {
   });
 
   it("starts empty again when the inbox remounts (FR-015)", async () => {
-    const { rerender } = render(
-      <TicketsProvider initialTickets={fixtureTickets}>
-        <InboxContainer key="first" />
-      </TicketsProvider>,
-    );
+    useTicketsStore.setState({ tickets: fixtureTickets });
+    const { rerender } = render(<InboxContainer key="first" />);
     await userEvent.type(searchField(), "forslag");
 
-    rerender(
-      <TicketsProvider initialTickets={fixtureTickets}>
-        <InboxContainer key="second" />
-      </TicketsProvider>,
-    );
+    rerender(<InboxContainer key="second" />);
     expect((searchField() as HTMLInputElement).value).toBe("");
     expect(rowTitles(screen.getByRole("list", { name: "Feedback" }))).toHaveLength(fixtureTickets.length);
   });
@@ -305,13 +295,12 @@ describe("Inbox – searching (spec 003, US1)", () => {
     // instead of unmounting it (research R9).
     function Page({ mode }: { mode: "visible" | "hidden" }) {
       return (
-        <TicketsProvider initialTickets={fixtureTickets}>
-          <Activity mode={mode}>
-            <InboxContainer />
-          </Activity>
-        </TicketsProvider>
+        <Activity mode={mode}>
+          <InboxContainer />
+        </Activity>
       );
     }
+    useTicketsStore.setState({ tickets: fixtureTickets });
     const { rerender } = render(<Page mode="visible" />);
     await userEvent.type(searchField(), "første");
     await userEvent.click(rowFor(screen.getByRole("list", { name: "Feedback" }), "Første fejl"));
@@ -324,7 +313,7 @@ describe("Inbox – searching (spec 003, US1)", () => {
     expect(screen.getByRole("button", { name: "Alle 5" }).getAttribute("aria-pressed")).toBe("true");
     expect(rowTitles(screen.getByRole("list", { name: "Feedback" }))).toHaveLength(fixtureTickets.length);
     expect(screen.getByText("Vælg en feedback i listen for at se detaljerne.")).toBeTruthy();
-    // Ticket changes live in the provider and survive: the opened ticket stays read.
+    // Ticket changes live in the store and survive: the opened ticket stays read.
     expect(within(rowFor(screen.getByRole("list", { name: "Feedback" }), "Første fejl")).queryByText("Ny")).toBeNull();
   });
 

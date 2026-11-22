@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useTickets } from "@/components/TicketsProvider/TicketsProvider";
 import { getActiveHref, getMenuHrefs } from "@/lib/side-menu/active-href";
 import { getNewCounts } from "@/lib/tickets/counts";
+import { useTicketsStore } from "@/lib/tickets/store";
 import type { AdminUser, Workspace } from "@/lib/types";
 import { SideMenu } from "./SideMenu";
 
@@ -31,7 +31,7 @@ function MenuWithPathname(props: MenuProps) {
 }
 
 function MenuWithCounts({ workspace, user, activeHref }: MenuProps & { activeHref: string | null }) {
-  const { tickets } = useTickets();
+  const tickets = useTicketsStore((state) => state.tickets);
   return (
     <SideMenu
       workspace={workspace}

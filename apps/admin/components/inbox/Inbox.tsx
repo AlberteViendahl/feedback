@@ -29,7 +29,7 @@ export function Inbox({ tickets, onOpenTicket, onSendReply, onCreateIssue }: Inb
 
   // With Cache Components, Next.js hides this page with <Activity> when the admin navigates
   // away, instead of unmounting it. Reset the view as it is hidden, so it starts fresh on return
-  // (spec 002 FR-017, spec 003 FR-015, research R9). Ticket changes live in the provider.
+  // (spec 002 FR-017, spec 003 FR-015, research R9). Ticket changes live in the ticket store.
   useLayoutEffect(() => () => dispatch({ type: "reset" }), []);
   const selected = getSelectedTicket(tickets, view);
 

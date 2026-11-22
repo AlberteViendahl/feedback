@@ -1,9 +1,9 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { InboxContainer } from "@/components/inbox/InboxContainer";
-import { TicketsProvider } from "@/components/TicketsProvider/TicketsProvider";
 import { at, makeTicket } from "@/lib/inbox/test-fixtures";
+import { useTicketsStore } from "@/lib/tickets/store";
 import type { AdminUser, Feedback, Platform, Workspace } from "@/lib/types";
 import { SideMenuContainer } from "./SideMenuContainer";
 
@@ -32,12 +32,16 @@ const tickets = [
   ticket("c", "Søgning er langsom", "simpleserp", 9),
 ];
 
+beforeEach(() => {
+  useTicketsStore.setState({ tickets });
+});
+
 function app(inboxKey = "first") {
   return (
-    <TicketsProvider initialTickets={tickets}>
+    <>
       <SideMenuContainer workspace={workspace} user={user} />
       <InboxContainer key={inboxKey} />
-    </TicketsProvider>
+    </>
   );
 }
 
@@ -79,7 +83,7 @@ describe("side menu and inbox together", () => {
     await userEvent.click(screen.getByRole("button", { name: /^Færdig \d/ }));
     expect(screen.getByRole("button", { name: /^Færdig \d/ }).getAttribute("aria-pressed")).toBe("true");
 
-    // Same provider, new inbox: like going to another page and back.
+    // Same store, new inbox: like going to another page and back.
     rerender(app("second"));
 
     expect(screen.getByRole("button", { name: /^Alle \d/ }).getAttribute("aria-pressed")).toBe("true");

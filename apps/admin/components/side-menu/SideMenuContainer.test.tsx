@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { usePathname } from "next/navigation";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { TicketsProvider } from "@/components/TicketsProvider/TicketsProvider";
 import { fixtureTickets } from "@/lib/inbox/test-fixtures";
+import { useTicketsStore } from "@/lib/tickets/store";
 import type { AdminUser, Workspace } from "@/lib/types";
 import { SideMenuContainer } from "./SideMenuContainer";
 
@@ -17,11 +17,8 @@ const user: AdminUser = { _id: "u", name: "Hussein", role: "Admin", workspaceId:
 
 function renderAt(pathname: string, activeHref?: string | null) {
   vi.mocked(usePathname).mockReturnValue(pathname);
-  render(
-    <TicketsProvider initialTickets={fixtureTickets}>
-      <SideMenuContainer workspace={workspace} user={user} activeHref={activeHref} />
-    </TicketsProvider>,
-  );
+  useTicketsStore.setState({ tickets: fixtureTickets });
+  render(<SideMenuContainer workspace={workspace} user={user} activeHref={activeHref} />);
 }
 
 function currentItem() {
