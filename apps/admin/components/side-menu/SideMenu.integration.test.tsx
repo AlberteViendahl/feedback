@@ -2,8 +2,9 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { InboxContainer } from "@/components/inbox/InboxContainer";
+import { ResetTickets } from "@/components/ResetTickets/ResetTickets";
 import { at, makeTicket } from "@/lib/inbox/test-fixtures";
-import { useTicketsStore } from "@/lib/tickets/store";
+import { resetTickets, useTicketsStore } from "@/lib/tickets/store";
 import type { AdminUser, Feedback, Platform, Workspace } from "@/lib/types";
 import { SideMenuContainer } from "./SideMenuContainer";
 
@@ -93,5 +94,27 @@ describe("side menu and inbox together", () => {
 
     await userEvent.click(row("Eksport fejler"));
     expect(screen.getByRole("heading", { name: /^Sendt svar · / })).toBeTruthy();
+  });
+
+  it("log-out clears ticket changes (spec 004, US3-1)", async () => {
+    // Log-out goes back to the mock data, so start from it rather than this file's tickets.
+    resetTickets();
+    const { rerender } = render(app());
+    const addWebsite = () => screen.getByText(/nothing happens/).closest("button") as HTMLButtonElement;
+    await userEvent.click(addWebsite());
+    expect(menuItem(/Organic Growth/).textContent).toContain("3 nye");
+    expect(menuItem(/GEOtracking/).textContent).toContain("2 nye");
+
+    // As arriving at the logged-out page does.
+    rerender(
+      <>
+        {app()}
+        <ResetTickets />
+      </>,
+    );
+
+    expect(menuItem(/Organic Growth/).textContent).toContain("4 nye");
+    expect(menuItem(/GEOtracking/).textContent).toContain("3 nye");
+    expect(within(addWebsite()).getByText("Ny")).toBeTruthy();
   });
 });
