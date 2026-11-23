@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { AppShell } from "@/components/app-shell/AppShell";
-import { SideMenuContainer } from "@/components/side-menu/SideMenuContainer";
+import { SideMenu } from "@/components/side-menu/SideMenu";
 import { mockUser, mockWorkspace } from "@/lib/mock-workspace";
 
 // The one place that knows where the workspace and user come from. Today: mock data. Later:
@@ -13,10 +13,10 @@ export default function AdminLayout({ children }: LayoutProps<"/">) {
         // The highlight reads the URL, which suspends on unknown platform URLs (research R5).
         <Suspense
           fallback={
-            <SideMenuContainer workspace={mockWorkspace} user={mockUser} activeHref={null} />
+            <SideMenu workspace={mockWorkspace} user={mockUser} activeHref={null} /> // Istedefor en spinner så har fallback mneyen som viser, bare at ingenting er highlightet.
           }
         >
-          <SideMenuContainer workspace={mockWorkspace} user={mockUser} />
+          <SideMenu workspace={mockWorkspace} user={mockUser} />
         </Suspense>
       }
     >

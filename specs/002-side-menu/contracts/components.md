@@ -8,6 +8,12 @@ to the inbox's contract from spec 001
 Folder convention (from spec 001): the main component sits at the root of its feature folder,
 each sub-component in its own folder named after it, no `index.ts` files.
 
+> **Changed 2026-11-23:** `SideMenuContainer` was merged into `SideMenu`. `SideMenu` now takes
+> `workspace`, `user` and an optional `activeHref` (same meaning as `SideMenuContainerProps`
+> below), reads the counts from the ticket store itself, and keeps `usePathname` in a private
+> inner component. The layout's `<Suspense>` setup is unchanged. Below, read `SideMenuContainer`
+> as `SideMenu`.
+
 ## Routes
 
 | URL | File | Menu | Highlighted item |

@@ -20,7 +20,6 @@ describe("SideMenu – keyboard only", () => {
       <SideMenu
         workspace={workspace}
         user={user}
-        counts={{ total: 4, byPlatform: { geotracking: 3, simpleserp: 1 } }}
         activeHref="/"
       />,
     );
