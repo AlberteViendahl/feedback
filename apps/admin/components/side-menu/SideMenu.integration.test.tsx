@@ -6,7 +6,7 @@ import { ResetTickets } from "@/components/ResetTickets/ResetTickets";
 import { at, makeTicket } from "@/lib/inbox/test-fixtures";
 import { resetTickets, useTicketsStore } from "@/lib/tickets/store";
 import type { AdminUser, Feedback, Platform, Workspace } from "@/lib/types";
-import { SideMenuContainer } from "./SideMenuContainer";
+import { SideMenu } from "./SideMenu";
 
 vi.mock("next/navigation", () => ({ usePathname: () => "/" }));
 
@@ -40,7 +40,7 @@ beforeEach(() => {
 function app(inboxKey = "first") {
   return (
     <>
-      <SideMenuContainer workspace={workspace} user={user} />
+      <SideMenu workspace={workspace} user={user} />
       <InboxContainer key={inboxKey} />
     </>
   );
