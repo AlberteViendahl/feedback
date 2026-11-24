@@ -95,6 +95,7 @@ export const mockFeedback: Feedback[] = [
     category: "general",
     description: "Great tool! The new AI mentions overview is super useful",
     status: "done",
+    completedAt: at("2026-11-17T09:05:00+01:00"),
     isRead: true,
     githubIssueCreated: false,
     reply: {
@@ -177,6 +178,7 @@ export const mockFeedback: Feedback[] = [
     category: "bug",
     description: "Date filter resets when I switch between folders",
     status: "done",
+    completedAt: at("2026-10-27T10:00:00+01:00"),
     isRead: true,
     githubIssueCreated: false,
     sender: {
@@ -333,6 +335,7 @@ export const mockFeedback: Feedback[] = [
     category: "idea",
     description: "Kan I tilføje eksport til Google Sheets?",
     status: "done",
+    completedAt: at("2026-10-11T10:20:00+02:00"),
     isRead: true,
     githubIssueCreated: true,
     reply: {
@@ -363,6 +366,7 @@ export const mockFeedback: Feedback[] = [
     category: "general",
     description: "Supporten var hurtig og hjælpsom. Tak!",
     status: "done",
+    completedAt: at("2026-10-05T09:30:00+02:00"),
     isRead: true,
     githubIssueCreated: false,
     sender: {
@@ -390,6 +394,7 @@ export const mockFeedback: Feedback[] = [
     description:
       "Når jeg logger ind, bliver jeg sendt tilbage til login-siden.\nDet sker kun i Safari.\nI Chrome virker det fint.",
     status: "done",
+    completedAt: at("2026-09-30T14:00:00+02:00"),
     isRead: true,
     githubIssueCreated: true,
     sender: {
