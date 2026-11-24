@@ -157,6 +157,9 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
 - [ ] TXXX Security hardening
 - [ ] TXXX Run quickstart.md validation
+- [ ] TXXX Update apps/admin/docs/architecture.md (all four levels) to match the changes in this feature
+
+**Note**: The architecture.md task is always the final task in every task list.
 
 ---
 

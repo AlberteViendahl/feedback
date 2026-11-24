@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-// Unknown URLs outside the admin area: rendered in the root layout only, without the menu.
+// The only not-found page: unknown URLs and notFound() (e.g. /platforms/foo) both land here,
+// rendered in the root layout only, without the menu.
 export default function NotFound() {
   return (
     <main className="app-shell__content">

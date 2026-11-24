@@ -1,7 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { InboxContainer } from "@/components/inbox/InboxContainer";
+import { Inbox } from "@/components/inbox/Inbox";
 import { ResetTickets } from "@/components/ResetTickets/ResetTickets";
 import { at, makeTicket } from "@/lib/inbox/test-fixtures";
 import { resetTickets, useTicketsStore } from "@/lib/tickets/store";
@@ -41,7 +41,7 @@ function app(inboxKey = "first") {
   return (
     <>
       <SideMenu workspace={workspace} user={user} />
-      <InboxContainer key={inboxKey} />
+      <Inbox key={inboxKey} />
     </>
   );
 }

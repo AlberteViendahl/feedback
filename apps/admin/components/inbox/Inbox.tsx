@@ -5,25 +5,19 @@ import { getSearchWords } from "@/lib/inbox/search";
 import { getCounts, getSelectedTicket, getVisibleTickets } from "@/lib/inbox/select";
 import { createInitialView, inboxViewReducer } from "@/lib/inbox/state";
 import { useNow } from "@/lib/inbox/use-now";
-import type { Feedback } from "@/lib/types";
+import { createIssue, markRead, sendReply, useTicketsStore } from "@/lib/tickets/store";
 import { SearchBar } from "./SearchBar/SearchBar";
 import { Toolbar } from "./Toolbar/Toolbar";
 import { TicketDetail } from "./TicketDetail/TicketDetail";
 import { TicketList } from "./TicketList/TicketList";
 
-type InboxProps = {
-  tickets: Feedback[];
-  onOpenTicket: (id: string) => void;
-  onSendReply: (id: string, text: string, now: number) => void;
-  onCreateIssue: (id: string) => void;
-};
-
 /**
- * Renders the given tickets and reports ticket changes through callbacks. Only the view
- * (search, filters, open ticket, draft, notice) is kept here, and it resets whenever the inbox
- * is hidden or remounts.
+ * The inbox, reading and changing tickets through the shared ticket store (with Convex, swap the
+ * store for queries). Only the view (search, filters, open ticket, draft, notice) is kept here,
+ * and it resets whenever the inbox is hidden or remounts.
  */
-export function Inbox({ tickets, onOpenTicket, onSendReply, onCreateIssue }: InboxProps) {
+export function Inbox() {
+  const tickets = useTicketsStore((state) => state.tickets);
   const [view, dispatch] = useReducer(inboxViewReducer, undefined, createInitialView);
   const now = useNow();
 
@@ -35,20 +29,20 @@ export function Inbox({ tickets, onOpenTicket, onSendReply, onCreateIssue }: Inb
 
   function handleSelect(id: string) {
     dispatch({ type: "select", id });
-    onOpenTicket(id);
+    markRead(id);
   }
 
   function handleSendReply() {
     const text = view.replyDraft.trim();
     if (!selected || selected.reply || text === "") return;
     // The clock is read in the event handler, never while rendering (spec 001 research R2).
-    onSendReply(selected._id, text, Date.now());
+    sendReply(selected._id, text, Date.now());
     dispatch({ type: "showNotice", notice: "reply-sent" });
   }
 
   function handleCreateIssue() {
     if (!selected || selected.githubIssueCreated) return;
-    onCreateIssue(selected._id);
+    createIssue(selected._id);
     dispatch({ type: "showNotice", notice: "issue-created" });
   }
 
