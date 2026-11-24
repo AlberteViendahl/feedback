@@ -536,6 +536,12 @@ body {
     padding: var(--page-padding);
   }
 
+  /* The not-found page brings its own padding for when it renders without the menu; inside the
+     admin frame it would double up (app/not-found.tsx). */
+  .app-shell__content .app-shell__content {
+    padding: 0;
+  }
+
   /* ---------- Tablet and mobile: top bar + slide-in menu (Figma 356:435, 356:1545) ---------- */
 
   /* Only shown below the breakpoint, where the side menu becomes a drawer. */
