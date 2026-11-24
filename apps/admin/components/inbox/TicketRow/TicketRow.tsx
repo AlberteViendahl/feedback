@@ -2,7 +2,7 @@ import { formatRelativeTime, formatShortDate, getPagePath } from "@/lib/inbox/fo
 import { PLATFORM_LABELS } from "@/lib/platforms";
 import type { Feedback } from "@/lib/types";
 import { CategoryIcon } from "@/components/Icons/CategoryIcon";
-import { Icon } from "@/components/Icons/Icon";
+import { PaperclipIcon } from "@/components/Icons/PaperclipIcon";
 import { StatusBadge } from "../StatusBadge/StatusBadge";
 
 type TicketRowProps = {
@@ -35,7 +35,7 @@ export function TicketRow({ ticket, isSelected, now, onSelect }: TicketRowProps)
           </span>
           {attachments.length > 0 && (
             <span className="ticket-row__meta shrink-0">
-              <Icon name="paperclip" alt="Vedhæftede filer" />
+              <PaperclipIcon label="Vedhæftede filer" />
               {attachments.length}
             </span>
           )}

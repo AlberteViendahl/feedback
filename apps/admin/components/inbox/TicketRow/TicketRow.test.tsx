@@ -30,7 +30,7 @@ describe("TicketRow", () => {
     expect(view.getByText("When I click “Add website” nothing happens")).toBeTruthy();
     expect(view.getByText("anna@company.dk · GEOtracking · /overview")).toBeTruthy();
     expect(view.getByText("2 min siden")).toBeTruthy();
-    expect(view.getByAltText("Vedhæftede filer").parentElement?.textContent).toBe("2");
+    expect(view.getByRole("img", { name: "Vedhæftede filer" }).parentElement?.textContent).toBe("2");
     expect(view.getByText("Ny")).toBeTruthy();
   });
 
@@ -41,7 +41,7 @@ describe("TicketRow", () => {
 
   it("has no attachment indicator without attachments", () => {
     renderRow({ ticket: { ...ticket, attachments: [] } });
-    expect(screen.queryByAltText("Vedhæftede filer")).toBeNull();
+    expect(screen.queryByRole("img", { name: "Vedhæftede filer" })).toBeNull();
   });
 
   it("marks the selected row", () => {

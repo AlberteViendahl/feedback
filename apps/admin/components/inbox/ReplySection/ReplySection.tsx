@@ -1,6 +1,7 @@
 import { formatDateTime } from "@/lib/inbox/format";
 import type { InboxNotice } from "@/lib/inbox/state";
 import type { Reply } from "@/lib/types";
+import { BranchIcon } from "@/components/Icons/BranchIcon";
 import { Icon } from "@/components/Icons/Icon";
 
 type ReplySectionProps = {
@@ -66,7 +67,7 @@ export function ReplyActions({
       <div className="detail__actions">
         {!githubIssueCreated && (
           <button type="button" className="button" onClick={onCreateIssue}>
-            <Icon name="branch" />
+            <BranchIcon />
             Opret GitHub-issue
           </button>
         )}

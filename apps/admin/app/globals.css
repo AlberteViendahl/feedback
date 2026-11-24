@@ -85,6 +85,7 @@
   --card-padding: 22px;
   --drawer-width: 300px; /* slide-in menu (Figma 356:1547) */
   --drawer-duration: 200ms;
+  --icon-size: 16px; /* inline SVG icons, see .icon-size */
 
   /* Feedback inbox (Figma node 323:1906) */
   --inbox-height: 769px;
@@ -135,6 +136,15 @@ body {
  * still override them (e.g. `class="border rounded-none"`).
  */
 @layer components {
+  /* ---------- Icons ---------- */
+
+  /* Sizes the inline SVG icons in components/Icons; the SVGs carry no size of their own. */
+  .icon-size {
+    flex-shrink: 0;
+    width: var(--icon-size);
+    height: var(--icon-size);
+  }
+
   /* ---------- Borders & dividers ---------- */
 
   .border {

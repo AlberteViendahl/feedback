@@ -3,7 +3,7 @@ import type { InboxNotice } from "@/lib/inbox/state";
 import type { Feedback } from "@/lib/types";
 import { AttachmentList } from "../AttachmentList/AttachmentList";
 import { ContextTable } from "../ContextTable/ContextTable";
-import { Icon } from "@/components/Icons/Icon";
+import { BugIcon } from "@/components/Icons/BugIcon";
 import { ReplyActions, ReplySection } from "../ReplySection/ReplySection";
 
 type TicketDetailProps = {
@@ -35,7 +35,7 @@ export function TicketDetail({
       <header className="detail__header">
         <span className="chip">
           {/* Figma only has a small icon for Fejl (FR-012). */}
-          {ticket.category === "bug" && <Icon name="bug" />}
+          {ticket.category === "bug" && <BugIcon />}
           {CATEGORY_LABELS[ticket.category]}
         </span>
         <h2 className="detail__number">{formatTicketNumber(ticket.number)}</h2>
