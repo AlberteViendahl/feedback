@@ -14,6 +14,10 @@ each sub-component in its own folder named after it, no `index.ts` files.
 > inner component. The layout's `<Suspense>` setup is unchanged. Below, read `SideMenuContainer`
 > as `SideMenu`.
 
+> **Changed 2026-11-24:** `app/(admin)/not-found.tsx` was removed; `app/not-found.tsx` is the only
+> not-found page. `/platforms/<unknown>` now shows it without the menu, like any other unknown
+> URL. Below, read the `/platforms/<unknown>` row as `app/not-found.tsx`, menu no.
+
 ## Routes
 
 | URL | File | Menu | Highlighted item |
