@@ -90,6 +90,7 @@
   --card-padding: 22px;
   --drawer-width: 300px; /* slide-in menu (Figma 356:1547) */
   --drawer-duration: 200ms;
+  --stat-card-width: 264px; /* key number card on tablet and smaller (Figma) */
   --icon-size: 16px; /* inline SVG icons, see .icon-size */
 
   /* Feedback inbox (Figma node 323:1906) */
@@ -275,6 +276,28 @@ body {
   .stat-card--warning { --stat-bg: var(--warning-bg); --stat-fg: var(--warning-fg); }
   .stat-card--success { --stat-bg: var(--success-bg); --stat-fg: var(--success-fg); }
   .stat-card--danger { --stat-bg: var(--danger-bg); --stat-fg: var(--danger-fg); }
+
+  /* Key numbers above the inbox (spec 005): four equal cards, information only. */
+  .key-numbers {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--inbox-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Tablet widths and below: cards keep their width and the row scrolls sideways. */
+  @media (width < theme(--breakpoint-xl)) {
+    .key-numbers {
+      display: flex;
+      overflow-x: auto;
+    }
+
+    .key-numbers > li {
+      flex: 0 0 var(--stat-card-width);
+    }
+  }
 
   .icon-frame {
     display: grid;
@@ -520,7 +543,7 @@ body {
     height: 31px;
     border-radius: 50%;
   }
-  .category-badge--bug { background: var(--category-bug-bg); }
+  .category-badge--bug { background: var(--category-bug-bg); color: var(--danger-fg); }
   .category-badge--idea { background: var(--category-idea-bg); }
   .category-badge--general { background: var(--category-general-bg); }
 
