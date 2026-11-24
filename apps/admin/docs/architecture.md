@@ -57,6 +57,7 @@ flowchart TD
   Base --> Missing
   Admin --> Inbox
   Admin --> Empty
+  Admin -. "unknown platform" .-> Missing
 
   classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
   classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
@@ -66,7 +67,8 @@ flowchart TD
 ```
 
 Every page sits in one base frame; the inbox and the empty pages also get the admin menu, while
-the logged-out page and the page-not-found page do not.
+the logged-out page does not. There is one page-not-found page: it shows the menu for an unknown
+platform, and no menu for any other unknown address.
 
 <details>
 <summary>Level 2</summary>
@@ -79,7 +81,7 @@ flowchart TD
   Platform["Platform page<br/>/platforms/[platform]"]:::page
   Settings["Settings<br/>/settings"]:::page
   LoggedOut["Logged out<br/>/logged-out"]:::page
-  NotFound["Not found, without menu"]:::page
+  NotFound["Not found<br/>menu only for an unknown platform"]:::page
 
   Root --> Admin
   Root --> LoggedOut
@@ -131,6 +133,7 @@ flowchart TD
   AppShell -- "children" --> Platform
   AppShell -- "children" --> Settings
   Platform -. "notFound()" .-> NotFound
+  AppShell -. "children, for notFound() in (admin)" .-> NotFound
   Home --> Inbox
   LoggedOut --> ResetTickets
 
@@ -157,7 +160,7 @@ flowchart TD
 
   Admin["AdminLayout<br/>app/(admin)/layout.tsx<br/>route group: adds no URL segment"]:::layout
   LoggedOut["/logged-out<br/>app/logged-out/page.tsx"]:::page
-  NotFound["not-found<br/>app/not-found.tsx"]:::page
+  NotFound["not-found<br/>app/not-found.tsx<br/>also the not-found boundary inside (admin)"]:::page
 
   Home["/<br/>app/(admin)/page.tsx"]:::page
   Platform["/platforms/[platform]<br/>app/(admin)/platforms/[platform]/page.tsx<br/>static params: geotracking, simpleserp"]:::page
@@ -179,12 +182,15 @@ flowchart TD
 ```
 
 The `(admin)` route group decides whether a page gets the side menu: everything inside it is
-wrapped by `AdminLayout` (and so by `AppShell` and `SideMenu`), while `/logged-out` and the
-not-found page sit directly under `RootLayout` with no menu. There is one not-found page,
-`app/not-found.tsx`: Next.js renders it both for unmatched URLs (e.g. `/foo`) and for `notFound()`.
-`/platforms/[platform]` builds only `geotracking` and `simpleserp` and calls `notFound()` for
-anything else, so `/platforms/foo` also shows that page, without the menu. `/platforms/[platform]`
-and `/settings` are placeholders with a heading only.
+wrapped by `AdminLayout` (and so by `AppShell` and `SideMenu`), while `/logged-out` sits directly
+under `RootLayout` with no menu. There is one not-found page, `app/not-found.tsx`, and where it
+renders depends on how it is reached. For unmatched URLs (e.g. `/foo`) it renders under
+`RootLayout` only, without the menu. Because `(admin)` is a route group directly under `app/`,
+Next.js also puts it as the not-found boundary inside `AdminLayout`, so `notFound()` from
+`/platforms/[platform]` (which builds only `geotracking` and `simpleserp`) renders it inside the
+admin frame, with the menu. This comes from Next.js, not from our code: the server HTML for
+`/platforms/foo` leaves the menu out, but the page the browser renders has it.
+`/platforms/[platform]` and `/settings` are placeholders with a heading only.
 
 </details>
 
@@ -370,12 +376,15 @@ flowchart TD
   subgraph NoMenu["Outside (admin): RootLayout only"]
     LoggedOut["/logged-out"]:::page
     ResetTickets["ResetTickets<br/>renders nothing"]:::component
-    NotFound["not-found"]:::page
     LoggedOut --> ResetTickets
   end
 
+  NotFound["not-found<br/>with or without the menu"]:::page
+
   AppShell -- "children (main)" --> Home
   AppShell -- "children (main)" --> Placeholders
+  AppShell -. "children (main), for notFound() in (admin)" .-> NotFound
+  NoMenu ~~~ NotFound
 
   classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
   classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
@@ -391,7 +400,8 @@ highlighted, and the real one hands off to `SideMenuAtCurrentUrl`, which reads t
 tickets through the store and keeps its own view state, while its children get props only, and
 both `ReplySection` and `ReplyActions` are exported from the same file,
 `components/inbox/ReplySection/ReplySection.tsx`. The placeholder pages and the not-found page
-render only HTML and `next/link`.
+render only HTML and `next/link`; the not-found page renders inside `AppShell` for an unknown
+platform and under `RootLayout` alone for any other unknown URL (see section 1, Level 4).
 
 </details>
 

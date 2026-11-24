@@ -9,4 +9,9 @@ describe("root not-found page", () => {
     expect(screen.getByRole("link", { name: "Gå til indbakken" }).getAttribute("href")).toBe("/");
     expect(screen.queryByRole("navigation")).toBeNull();
   });
+
+  it("has no <main> of its own, so it does not nest one inside the admin layout's", () => {
+    render(<NotFound />);
+    expect(screen.queryByRole("main")).toBeNull();
+  });
 });
