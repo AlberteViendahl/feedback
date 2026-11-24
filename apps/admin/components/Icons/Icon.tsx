@@ -2,9 +2,6 @@ import Image from "next/image";
 
 // SVGs downloaded from Figma (research R6), rendered at their own root size.
 const ICONS = {
-  "category-bug": { width: 31, height: 31 },
-  "category-idea": { width: 31, height: 31 },
-  "category-general": { width: 31, height: 31 },
   image: { width: 18.3, height: 21.9667 },
   "play-circle": { width: 40, height: 40 },
   play: { width: 11.4718, height: 13.7662 },

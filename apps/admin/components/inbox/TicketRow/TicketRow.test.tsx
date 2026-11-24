@@ -26,12 +26,23 @@ describe("TicketRow", () => {
   it("shows icon, preview, sender, platform, page, time, attachments and badge", () => {
     const { row } = renderRow();
     const view = within(row);
-    expect(view.getByAltText("Fejl")).toBeTruthy();
+    expect(view.getByRole("img", { name: "Fejl" })).toBeTruthy();
     expect(view.getByText("When I click “Add website” nothing happens")).toBeTruthy();
     expect(view.getByText("anna@company.dk · GEOtracking · /overview")).toBeTruthy();
     expect(view.getByText("2 min siden")).toBeTruthy();
     expect(view.getByRole("img", { name: "Vedhæftede filer" }).parentElement?.textContent).toBe("2");
     expect(view.getByText("Ny")).toBeTruthy();
+  });
+
+  it.each([
+    ["bug", "Fejl"],
+    ["idea", "Forslag"],
+    ["general", "Generel feedback"],
+  ] as const)("shows the %s icon named %s", (category, label) => {
+    renderRow({ ticket: { ...ticket, category } });
+    expect(screen.getByRole("img", { name: label }).parentElement?.className).toBe(
+      `category-badge category-badge--${category}`,
+    );
   });
 
   it("shows the date while the current time is unknown", () => {

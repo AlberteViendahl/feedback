@@ -1,7 +1,9 @@
-import { formatRelativeTime, formatShortDate, getPagePath } from "@/lib/inbox/format";
+import { CATEGORY_LABELS, formatRelativeTime, formatShortDate, getPagePath } from "@/lib/inbox/format";
 import { PLATFORM_LABELS } from "@/lib/platforms";
 import type { Feedback } from "@/lib/types";
-import { CategoryIcon } from "@/components/Icons/CategoryIcon";
+import { BugIcon } from "@/components/Icons/BugIcon";
+import { LightbulbIcon } from "@/components/Icons/LightbulbIcon";
+import { MessageIcon } from "@/components/Icons/MessageIcon";
 import { PaperclipIcon } from "@/components/Icons/PaperclipIcon";
 import { StatusBadge } from "../StatusBadge/StatusBadge";
 
@@ -25,7 +27,11 @@ export function TicketRow({ ticket, isSelected, now, onSelect }: TicketRowProps)
       aria-current={isSelected ? "true" : undefined}
       onClick={() => onSelect(ticket._id)}
     >
-      <CategoryIcon category={ticket.category} />
+      <span className={`category-badge category-badge--${ticket.category}`}>
+        {ticket.category === "bug" && <BugIcon label={CATEGORY_LABELS.bug} />}
+        {ticket.category === "idea" && <LightbulbIcon label={CATEGORY_LABELS.idea} />}
+        {ticket.category === "general" && <MessageIcon label={CATEGORY_LABELS.general} />}
+      </span>
       <span className="ticket-row__body">
         <span className="text-title truncate-line">{ticket.description}</span>
         <span className="text-meta ticket-row__aside">{time}</span>
