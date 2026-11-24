@@ -36,6 +36,11 @@ describe("sendReply", () => {
     expect(find(tickets, "t1")?.status).toBe("done");
   });
 
+  it("records when the ticket was completed (spec 005 FR-013)", () => {
+    const tickets = ticketsReducer(fixtureTickets, { type: "sendReply", id: "t1", text: "Tak", now });
+    expect(find(tickets, "t1")?.completedAt).toBe(now);
+  });
+
   it("marks an in-progress ticket done", () => {
     const tickets = ticketsReducer(fixtureTickets, { type: "sendReply", id: "t4", text: "Tak", now });
     expect(find(tickets, "t4")?.status).toBe("done");
@@ -50,6 +55,7 @@ describe("sendReply", () => {
   it("is a no-op when a reply already exists", () => {
     const once = ticketsReducer(fixtureTickets, { type: "sendReply", id: "t1", text: "Første", now });
     expect(ticketsReducer(once, { type: "sendReply", id: "t1", text: "Anden", now: now + 1 })).toBe(once);
+    expect(find(once, "t1")?.completedAt).toBe(now);
   });
 
   it("is a no-op for unknown ids", () => {

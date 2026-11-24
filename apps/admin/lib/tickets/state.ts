@@ -20,7 +20,7 @@ export function ticketsReducer(tickets: Feedback[], action: TicketAction): Feedb
     case "sendReply": {
       const text = action.text.trim();
       if (ticket.reply || text === "") return tickets;
-      updated = { ...ticket, reply: { text, sentAt: action.now }, status: "done" };
+      updated = { ...ticket, reply: { text, sentAt: action.now }, status: "done", completedAt: action.now };
       break;
     }
     case "createIssue": {

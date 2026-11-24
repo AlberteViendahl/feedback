@@ -325,3 +325,51 @@ describe("Inbox – searching (spec 003, US1)", () => {
     expect(document.querySelector("img[src='x']")).toBeNull();
   });
 });
+
+describe("Inbox – key numbers (spec 005)", () => {
+  /** The number on each card: new, in progress, done, bugs. */
+  function cardNumbers() {
+    const row = screen.getByRole("list", { name: "Nøgletal" });
+    return within(row)
+      .getAllByRole("listitem")
+      .map((card) => card.querySelector(".text-stat")?.textContent);
+  }
+
+  it("counts new and in-progress tickets (US1)", () => {
+    renderInbox();
+    expect(cardNumbers().slice(0, 2)).toEqual(["1", "2"]);
+  });
+
+  it("moves an opened ticket from new to in progress (US1)", async () => {
+    const { list } = renderInbox();
+    await userEvent.click(rowFor(list, "Første fejl"));
+    expect(cardNumbers().slice(0, 2)).toEqual(["0", "3"]);
+  });
+
+  it("moves a ticket from in progress to done with Done/send (US2)", async () => {
+    const { list } = renderInbox();
+    expect(cardNumbers().slice(1, 3)).toEqual(["2", "2"]);
+    await userEvent.click(rowFor(list, "Generel ros"));
+    await userEvent.type(screen.getByRole("textbox"), " Tak.");
+    await userEvent.click(screen.getByRole("button", { name: "Færdig/send" }));
+    expect(cardNumbers().slice(1, 3)).toEqual(["1", "3"]);
+  });
+
+  it("does nothing when a card is clicked (US4)", async () => {
+    const { list } = renderInbox();
+    await userEvent.click(rowFor(list, "Et forslag"));
+    const before = { rows: rowTitles(list), detail: screen.getByRole("heading", { level: 2 }).textContent };
+    const row = screen.getByRole("list", { name: "Nøgletal" });
+    for (const card of within(row).getAllByRole("listitem")) await userEvent.click(card);
+    expect(rowTitles(list)).toEqual(before.rows);
+    expect(screen.getByRole("heading", { level: 2 }).textContent).toBe(before.detail);
+  });
+
+  it("ignores search and the category filter (FR-007)", async () => {
+    renderInbox();
+    const before = cardNumbers();
+    await userEvent.type(screen.getByRole("searchbox", { name: "Søg i feedback" }), "forslag");
+    await userEvent.selectOptions(screen.getByRole("combobox", { name: /Kategori/ }), "Fejl");
+    expect(cardNumbers()).toEqual(before);
+  });
+});

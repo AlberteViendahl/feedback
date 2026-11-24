@@ -64,6 +64,8 @@ export type Feedback = {
   status: FeedbackStatus;
   isRead: boolean;
   githubIssueCreated: boolean;
+  /** Time the ticket was completed (status done), in milliseconds since epoch. Spec 005. */
+  completedAt?: number;
   reply?: Reply;
   sender: Sender;
   context: FeedbackContext;

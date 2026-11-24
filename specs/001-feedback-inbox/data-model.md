@@ -32,6 +32,7 @@ generated `Doc<"feedback">` and the handwritten module is deleted.
 | `isRead` | `boolean` | `false` until an admin opens the ticket. |
 | `githubIssueCreated` | `boolean` | `true` once "Opret GitHub-issue" has been used. Never goes back to `false`. |
 | `reply` | `Reply \| undefined` | At most one. Once set, never changes. |
+| `completedAt` | `number \| undefined` (ms since epoch) | Time the ticket became `done`; set with `status`. Added by [spec 005](../005-key-numbers-row/data-model.md). |
 | `sender` | `Sender` | Required. |
 | `context` | `FeedbackContext` | Required. |
 | `attachments` | `Attachment[]` | Zero or more. |
@@ -91,7 +92,7 @@ or play symbol for video). A storage URL is added together with Convex file stor
 | Action | Allowed when | Effect |
 |--------|--------------|--------|
 | Open ticket | always | `isRead = true` (stays true) |
-| Færdig/send | `reply` is undefined and trimmed draft is non-empty | `reply = { text, sentAt: now }`, `status = "done"` |
+| Færdig/send | `reply` is undefined and trimmed draft is non-empty | `reply = { text, sentAt: now }`, `status = "done"`, `completedAt = now` (spec 005) |
 | Opret GitHub-issue | `githubIssueCreated === false` | `githubIssueCreated = true`; `status = "in_progress"` unless it is already `"done"` |
 
 There is no transition back to `open`, and `done` is final in this feature.

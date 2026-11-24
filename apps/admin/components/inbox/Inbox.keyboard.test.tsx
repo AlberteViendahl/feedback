@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { at, fixtureTickets } from "@/lib/inbox/test-fixtures";
@@ -68,6 +68,16 @@ describe("Inbox – keyboard only", () => {
     expect(screen.getByRole("status").textContent).toBe("Svaret er sendt.");
   });
 
+  it("skips the key numbers when tabbing from search to the filters (spec 005 FR-009)", async () => {
+    useTicketsStore.setState({ tickets: fixtureTickets });
+    render(<Inbox />);
+    await tabTo(screen.getByRole("searchbox", { name: "Søg i feedback" }));
+    await userEvent.tab();
+    expect(within(screen.getByRole("group", { name: "Status" })).getAllByRole("button")[0]).toBe(
+      document.activeElement,
+    );
+  });
+
   it("switches the status filter with Enter", async () => {
     useTicketsStore.setState({ tickets: fixtureTickets });
     render(<Inbox />);
@@ -75,6 +85,7 @@ describe("Inbox – keyboard only", () => {
     await tabTo(done);
     await userEvent.keyboard("{Enter}");
     expect(done.getAttribute("aria-pressed")).toBe("true");
-    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    const list = screen.getByRole("list", { name: "Feedback" });
+    expect(within(list).getAllByRole("listitem")).toHaveLength(2);
   });
 });

@@ -3,17 +3,23 @@ import { describe, expect, it } from "vitest";
 import { ArrowLeftIcon } from "./ArrowLeftIcon";
 import { BranchIcon } from "./BranchIcon";
 import { BugIcon } from "./BugIcon";
+import { CheckIcon } from "./CheckIcon";
+import { InboxIcon } from "./InboxIcon";
 import { LightbulbIcon } from "./LightbulbIcon";
 import { MessageIcon } from "./MessageIcon";
 import { PaperclipIcon } from "./PaperclipIcon";
+import { ProgressIcon } from "./ProgressIcon";
 
 describe.each([
   ["ArrowLeftIcon", ArrowLeftIcon],
   ["BranchIcon", BranchIcon],
   ["BugIcon", BugIcon],
+  ["CheckIcon", CheckIcon],
+  ["InboxIcon", InboxIcon],
   ["LightbulbIcon", LightbulbIcon],
   ["MessageIcon", MessageIcon],
   ["PaperclipIcon", PaperclipIcon],
+  ["ProgressIcon", ProgressIcon],
 ] as const)("%s", (_, SvgIcon) => {
   it("leaves its size to the icon-size class", () => {
     const { container } = render(<SvgIcon />);

@@ -5,7 +5,9 @@ import { getSearchWords } from "@/lib/inbox/search";
 import { getCounts, getSelectedTicket, getVisibleTickets } from "@/lib/inbox/select";
 import { createInitialView, inboxViewReducer } from "@/lib/inbox/state";
 import { useNow } from "@/lib/inbox/use-now";
+import { getKeyNumbers } from "@/lib/tickets/key-numbers";
 import { createIssue, markRead, sendReply, useTicketsStore } from "@/lib/tickets/store";
+import { KeyNumbers } from "./KeyNumbers/KeyNumbers";
 import { SearchBar } from "./SearchBar/SearchBar";
 import { Toolbar } from "./Toolbar/Toolbar";
 import { TicketDetail } from "./TicketDetail/TicketDetail";
@@ -51,6 +53,8 @@ export function Inbox() {
       {/* Outside the section, so the bar can run edge to edge above it (spec 003, research R6). */}
       <SearchBar value={view.search} onChange={(value) => dispatch({ type: "setSearch", value })} />
       <section className="inbox" aria-label="Feedback-indbakke">
+        {/* Counts every ticket, so search and filters never change it (spec 005 FR-007). */}
+        <KeyNumbers numbers={getKeyNumbers(tickets, now)} />
         <Toolbar
           statusFilter={view.statusFilter}
           categoryFilter={view.categoryFilter}
