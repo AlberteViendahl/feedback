@@ -54,6 +54,11 @@
   --danger-bg: #fff0f1;
   --danger-fg: #be3f59;
 
+  /* Circles behind the category icons in the ticket list */
+  --category-bug-bg: #ffe8ed;
+  --category-idea-bg: #fff3d4;
+  --category-general-bg: #dff4ee;
+
   /* Radii */
   --radius-sm: 8px; /* buttons */
   --radius-icon: 9px; /* icon frames, context table */
@@ -85,6 +90,7 @@
   --card-padding: 22px;
   --drawer-width: 300px; /* slide-in menu (Figma 356:1547) */
   --drawer-duration: 200ms;
+  --icon-size: 16px; /* inline SVG icons, see .icon-size */
 
   /* Feedback inbox (Figma node 323:1906) */
   --inbox-height: 769px;
@@ -135,6 +141,15 @@ body {
  * still override them (e.g. `class="border rounded-none"`).
  */
 @layer components {
+  /* ---------- Icons ---------- */
+
+  /* Sizes the inline SVG icons in components/Icons; the SVGs carry no size of their own. */
+  .icon-size {
+    flex-shrink: 0;
+    width: var(--icon-size);
+    height: var(--icon-size);
+  }
+
   /* ---------- Borders & dividers ---------- */
 
   .border {
@@ -496,6 +511,19 @@ body {
     text-align: left;
     cursor: pointer;
   }
+  /* Tinted circle behind a ticket's category icon. */
+  .category-badge {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 31px;
+    height: 31px;
+    border-radius: 50%;
+  }
+  .category-badge--bug { background: var(--category-bug-bg); }
+  .category-badge--idea { background: var(--category-idea-bg); }
+  .category-badge--general { background: var(--category-general-bg); }
+
   .list-row--selected {
     background: var(--surface-muted);
     box-shadow: inset 3px 0 0 var(--surface-inverse);

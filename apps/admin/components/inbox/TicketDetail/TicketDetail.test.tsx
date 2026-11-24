@@ -60,11 +60,11 @@ describe("TicketDetail", () => {
 
   it("shows the bug icon only for Fejl", () => {
     const { unmount } = renderDetail(ticket);
-    expect(document.querySelector('img[src="/icons/bug.svg"]')).not.toBeNull();
+    expect(document.querySelector(".chip svg")).not.toBeNull();
     unmount();
     renderDetail({ ...ticket, category: "idea" });
     expect(screen.getByText("Forslag")).toBeTruthy();
-    expect(document.querySelector('img[src="/icons/bug.svg"]')).toBeNull();
+    expect(document.querySelector(".chip svg")).toBeNull();
   });
 
   it("shows markup in the description as literal text", () => {
