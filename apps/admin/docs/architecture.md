@@ -204,11 +204,13 @@ flowchart TD
   Menu["Menu"]:::component
   TopBar["Top bar on small screens"]:::component
   Inbox["Feedback inbox"]:::page
+  KeyNums["Key numbers"]:::component
   Parts["List of feedback and the open feedback"]:::component
 
   Frame --> TopBar
   Frame --> Menu
   Frame --> Inbox
+  Inbox --> KeyNums
   Inbox --> Parts
 
   classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
@@ -219,7 +221,7 @@ flowchart TD
 ```
 
 The admin frame puts a menu (and a top bar on small screens) around the page, and the inbox shows
-a list of feedback next to the one that is open.
+a row of key numbers above a list of feedback next to the one that is open.
 
 <details>
 <summary>Level 2</summary>
@@ -232,6 +234,7 @@ flowchart TD
   SideMenu["SideMenu"]:::component
   Home["Inbox page<br/>/"]:::page
   Inbox["Inbox"]:::component
+  KeyNumbers["KeyNumbers"]:::component
   TicketList["TicketList"]:::component
   TicketDetail["TicketDetail"]:::component
 
@@ -240,6 +243,7 @@ flowchart TD
   AppShell --> SideMenu
   AppShell --> Home
   Home --> Inbox
+  Inbox --> KeyNumbers
   Inbox --> TicketList
   Inbox --> TicketDetail
 
@@ -271,6 +275,7 @@ flowchart TD
   Home["/"]:::page
   Inbox["Inbox"]:::component
   SearchBar["SearchBar"]:::component
+  KeyNumbers["KeyNumbers"]:::component
   Toolbar["Toolbar"]:::component
   TicketList["TicketList"]:::component
   TicketRow["TicketRow"]:::component
@@ -289,6 +294,7 @@ flowchart TD
   Store -- "zustand: useTicketsStore" --> SideMenu
   Store -- "zustand: useTicketsStore" --> Inbox
   Inbox -- "props" --> SearchBar
+  Inbox -- "props" --> KeyNumbers
   Inbox -- "props" --> Toolbar
   Inbox -- "props" --> TicketList
   TicketList -- "props" --> TicketRow
@@ -311,8 +317,10 @@ Nesting is shown as parent → child. Icons are left out to keep the diagram rea
 (`components/Icons/Icon.tsx`, an image from `public/icons`) is rendered by `AppShell`, `SideMenu`
 (and its inner `PlatformIcon`), `UserBlock`, `UserAvatar`, `SearchBar`, `Toolbar`,
 `AttachmentList`, `ContextTable` and `ReplyActions`. The inline SVG icons in `components/Icons`
-take their size from the global `icon-size` class in `app/globals.css` and their dark colour from
-the surrounding text (`currentColor`): `CategoryBadge` renders `BugIcon`, `LightbulbIcon` or
+take their size from the global `icon-size` class in `app/globals.css`, and all but `LightbulbIcon`
+and `MessageIcon` take their colour from the surrounding text (`currentColor`): `KeyNumbers`
+renders `InboxIcon`, `ProgressIcon`, `CheckIcon` and `BugIcon` in its cards' colours,
+`CategoryBadge` renders `BugIcon` (red from `.category-badge--bug`), `LightbulbIcon` or
 `MessageIcon` for the ticket's category, `TicketDetail` renders `BugIcon`, `TicketRow` renders
 `PaperclipIcon` and `ReplyActions` renders `BranchIcon`; `ArrowLeftIcon` is not rendered yet.
 
@@ -348,6 +356,7 @@ flowchart TD
     Home["Home<br/>app/(admin)/page.tsx"]:::page
     Inbox["Inbox"]:::component
     SearchBar["SearchBar"]:::component
+    KeyNumbers["KeyNumbers<br/>4 cards, nothing to click"]:::component
     Toolbar["Toolbar"]:::component
     TicketList["TicketList"]:::component
     TicketRow["TicketRow ×n"]:::component
@@ -361,6 +370,7 @@ flowchart TD
 
     Home --> Inbox
     Inbox --> SearchBar
+    Inbox --> KeyNumbers
     Inbox --> Toolbar
     Inbox --> TicketList --> TicketRow
     TicketRow --> CategoryBadge
@@ -401,7 +411,8 @@ flowchart TD
 `usePathname` can suspend on unknown platform URLs, so the fallback is the same menu with nothing
 highlighted, and the real one hands off to `SideMenuAtCurrentUrl`, which reads the URL and renders
 `SideMenu` again with `activeHref` set. The inbox is the only page with real UI; `Inbox` reads and changes
-tickets through the store and keeps its own view state, while its children get props only, and
+tickets through the store and keeps its own view state, while its children get props only
+(`KeyNumbers` is a plain list of four cards above the toolbar, with no buttons or links), and
 both `ReplySection` and `ReplyActions` are exported from the same file,
 `components/inbox/ReplySection/ReplySection.tsx`. The placeholder pages and the not-found page
 render only HTML and `next/link`; the not-found page renders inside `AppShell` for an unknown
@@ -420,12 +431,14 @@ flowchart TD
   Memory[("Shared feedback memory")]:::store
   Menu["Menu"]:::component
   Inbox["Inbox"]:::component
+  KeyNums["Key numbers"]:::component
 
   Sample -- "workspace and user" --> Frame
   Sample -- "feedback" --> Memory
   Frame -- "workspace and user" --> Menu
   Memory -- "number of new feedback" --> Menu
   Memory -- "feedback" --> Inbox
+  Inbox -- "new, in progress, done, bugs this week" --> KeyNums
   Inbox -. "read, replied, issue created" .-> Memory
 
   classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
@@ -436,7 +449,7 @@ flowchart TD
 ```
 
 All feedback lives in one shared memory filled from sample data, so when the inbox changes a
-feedback, the menu's count of new feedback updates at once.
+feedback, the menu's count of new feedback and the inbox's key numbers update at once.
 
 <details>
 <summary>Level 2</summary>
@@ -450,6 +463,7 @@ flowchart TD
   AppShell["AppShell"]:::component
   SideMenu["SideMenu"]:::component
   Inbox["Inbox"]:::component
+  KeyNumbers["KeyNumbers"]:::component
   ResetTickets["ResetTickets<br/>on log-out"]:::component
 
   MockWorkspace -- "mock" --> AdminLayout
@@ -458,6 +472,7 @@ flowchart TD
   MockFeedback -- "mock" --> Store
   Store -- "zustand" --> SideMenu
   Store -- "zustand" --> Inbox
+  Inbox -- "props" --> KeyNumbers
   Inbox -. "zustand" .-> Store
   ResetTickets -. "zustand" .-> Store
 
@@ -486,6 +501,7 @@ flowchart TD
 
   Inbox["Inbox<br/>view state: useReducer"]:::component
   SearchBar["SearchBar"]:::component
+  KeyNumbers["KeyNumbers"]:::component
   Toolbar["Toolbar"]:::component
   TicketList["TicketList"]:::component
   TicketDetail["TicketDetail"]:::component
@@ -499,6 +515,7 @@ flowchart TD
   Store -- "zustand: useTicketsStore" --> SideMenu
   Store -- "zustand: useTicketsStore" --> Inbox
   Inbox -- "props: search" --> SearchBar
+  Inbox -- "props: key numbers" --> KeyNumbers
   Inbox -- "props: filters, counts" --> Toolbar
   Inbox -- "props: visible tickets" --> TicketList
   Inbox -- "props: selected ticket" --> TicketDetail
@@ -532,6 +549,7 @@ flowchart TD
 
   Inbox["Inbox<br/>view state: useReducer"]:::component
   SearchBar["SearchBar"]:::component
+  KeyNumbers["KeyNumbers"]:::component
   Toolbar["Toolbar"]:::component
   TicketList["TicketList"]:::component
   TicketRow["TicketRow"]:::component
@@ -552,13 +570,14 @@ flowchart TD
 
   Store -- "zustand: useTicketsStore<br/>tickets" --> Inbox
   Inbox -- "props: search" --> SearchBar
+  Inbox -- "props: numbers<br/>getKeyNumbers(tickets, now)" --> KeyNumbers
   Inbox -- "props: filters, sortOrder, counts" --> Toolbar
   Inbox -- "props: visible tickets, selectedId, now" --> TicketList
   TicketList -- "props: ticket, isSelected, now" --> TicketRow
   Inbox -- "props: selected ticket, replyDraft, notice" --> TicketDetail
   TicketDetail -- "props: ticket fields" --> Sections
 
-  Inbox -. "zustand: useTicketsStore<br/>markRead, sendReply, createIssue" .-> Store
+  Inbox -. "zustand: useTicketsStore<br/>markRead, sendReply (sets completedAt), createIssue" .-> Store
   ResetTickets -. "zustand: useTicketsStore<br/>resetTickets" .-> Store
 
   classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
@@ -574,7 +593,10 @@ is seeded from `mockFeedback` and read by both the side menu (unread counts) and
 opening a ticket updates the menu count at once. All ticket changes go through the store's action
 functions (`markRead`, `sendReply`, `createIssue`, `resetTickets`), which run the pure
 `ticketsReducer` in `lib/tickets/state.ts`; `Inbox` calls them directly, and its children only
-get callbacks from `Inbox`. Search, filters, sort order, the open ticket, the
+get callbacks from `Inbox`. The key numbers are not stored anywhere: `Inbox` counts them on every
+render with the pure `getKeyNumbers` (`lib/tickets/key-numbers.ts`) from all tickets and the
+current time (`useNow`), never from the filtered list, so search and filters do not change them;
+"done in the last 30 days" uses the `completedAt` that `sendReply` sets. Search, filters, sort order, the open ticket, the
 reply draft and the notice are local `useReducer` state in `Inbox` (`lib/inbox/state.ts`), flow
 down as props, and reset when the page is hidden; the highlighted menu item comes from the URL
 (`usePathname`), not from any store.
