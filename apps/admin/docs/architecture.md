@@ -4,11 +4,14 @@ An overview of the admin app as the code stands today: which pages exist, which 
 render, and where their data comes from. Everything here is read from the source; where the code
 leaves something open, the text says so instead of filling the gap.
 
+Each section comes in four levels. Level 1 is the quick overview and is always shown; Levels 2–4
+are collapsed and add detail step by step, ending with the full diagram in Level 4.
+
 Keep this file in step with the code (see `CLAUDE.md` → Conventions).
 
 ## Legend
 
-The same colours are used in all three diagrams.
+The same colours are used in every diagram, at every level.
 
 | Category      | Colour            | What it is                                                         |
 | ------------- | ----------------- | ------------------------------------------------------------------ |
@@ -33,10 +36,121 @@ flowchart LR
   classDef mock fill:#F3F4F6,stroke:#4B5563,color:#1F2937,stroke-dasharray:4 3
 ```
 
-In the data-flow diagram, solid arrows carry data down to where it is shown; dashed arrows carry
+In the data-flow diagrams, solid arrows carry data down to where it is shown; dashed arrows carry
 changes back up to the store.
 
 ## 1. Pages and routes
+
+### Level 1
+
+```mermaid
+flowchart TD
+  Base["Base frame"]:::layout
+  Admin["Admin area with menu"]:::layout
+  Inbox["Feedback inbox"]:::page
+  Empty["Empty pages for later"]:::page
+  Out["Logged-out page"]:::page
+
+  Base --> Admin
+  Base --> Out
+  Admin --> Inbox
+  Admin --> Empty
+
+  classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
+  classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
+  classDef component fill:#DCFCE7,stroke:#15803D,color:#14532D
+  classDef store fill:#FFEDD5,stroke:#C2410C,color:#7C2D12
+  classDef mock fill:#F3F4F6,stroke:#4B5563,color:#1F2937,stroke-dasharray:4 3
+```
+
+Every page sits in one base frame; the inbox and the empty pages also get the admin menu, while
+the logged-out page does not.
+
+<details>
+<summary>Level 2</summary>
+
+```mermaid
+flowchart TD
+  Root["RootLayout"]:::layout
+  Admin["AdminLayout<br/>(admin) group"]:::layout
+  Home["Inbox<br/>/"]:::page
+  Platform["Platform page<br/>/platforms/[platform]"]:::page
+  Settings["Settings<br/>/settings"]:::page
+  AdminNotFound["Not found, with menu"]:::page
+  LoggedOut["Logged out<br/>/logged-out"]:::page
+  RootNotFound["Not found, without menu"]:::page
+
+  Root --> Admin
+  Root --> LoggedOut
+  Root --> RootNotFound
+  Admin --> Home
+  Admin --> Platform
+  Admin --> Settings
+  Admin --> AdminNotFound
+  Platform -. "unknown platform" .-> AdminNotFound
+
+  classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
+  classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
+  classDef component fill:#DCFCE7,stroke:#15803D,color:#14532D
+  classDef store fill:#FFEDD5,stroke:#C2410C,color:#7C2D12
+  classDef mock fill:#F3F4F6,stroke:#4B5563,color:#1F2937,stroke-dasharray:4 3
+```
+
+</details>
+
+<details>
+<summary>Level 3</summary>
+
+```mermaid
+flowchart TD
+  MockWorkspace[/"lib/mock-workspace.ts"/]:::mock
+  MockFeedback[/"lib/mock-feedback.ts"/]:::mock
+  Store[("useTicketsStore")]:::store
+
+  Root["RootLayout"]:::layout
+  Admin["AdminLayout"]:::layout
+  AppShell["AppShell"]:::component
+  SideMenu["SideMenu"]:::component
+
+  Home["/"]:::page
+  Inbox["Inbox"]:::component
+  Platform["/platforms/[platform]"]:::page
+  Settings["/settings"]:::page
+  AdminNotFound["not-found (admin)"]:::page
+
+  LoggedOut["/logged-out"]:::page
+  ResetTickets["ResetTickets"]:::component
+  RootNotFound["not-found (root)"]:::page
+
+  Root --> Admin
+  Root --> LoggedOut
+  Root --> RootNotFound
+  MockWorkspace -- "mock: lib/mock-workspace.ts" --> Admin
+  Admin -- "props: user, menu, children" --> AppShell
+  Admin -- "props: workspace, user" --> SideMenu
+  AppShell -- "children" --> Home
+  AppShell -- "children" --> Platform
+  AppShell -- "children" --> Settings
+  AppShell -- "children" --> AdminNotFound
+  Home --> Inbox
+  LoggedOut --> ResetTickets
+
+  MockFeedback -- "mock: lib/mock-feedback.ts" --> Store
+  Store -- "zustand: useTicketsStore" --> SideMenu
+  Store -- "zustand: useTicketsStore" --> Inbox
+  ResetTickets -. "zustand: useTicketsStore" .-> Store
+
+  classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
+  classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
+  classDef component fill:#DCFCE7,stroke:#15803D,color:#14532D
+  classDef store fill:#FFEDD5,stroke:#C2410C,color:#7C2D12
+  classDef mock fill:#F3F4F6,stroke:#4B5563,color:#1F2937,stroke-dasharray:4 3
+```
+
+</details>
+
+<details>
+<summary>Level 4</summary>
 
 ```mermaid
 flowchart TD
@@ -75,7 +189,120 @@ not-found page inside the menu; `/platforms/[platform]` and `/settings` are plac
 heading only. Which not-found page an unmatched URL outside `/platforms/…` (e.g. `/foo`) gets is
 left to Next.js routing: the code comments say the root one, but no test in this app checks it.
 
+</details>
+
 ## 2. Component tree
+
+### Level 1
+
+```mermaid
+flowchart TD
+  Frame["Admin frame"]:::layout
+  Menu["Menu"]:::component
+  TopBar["Top bar on small screens"]:::component
+  Inbox["Feedback inbox"]:::page
+  Parts["List of feedback and the open feedback"]:::component
+
+  Frame --> TopBar
+  Frame --> Menu
+  Frame --> Inbox
+  Inbox --> Parts
+
+  classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
+  classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
+  classDef component fill:#DCFCE7,stroke:#15803D,color:#14532D
+  classDef store fill:#FFEDD5,stroke:#C2410C,color:#7C2D12
+  classDef mock fill:#F3F4F6,stroke:#4B5563,color:#1F2937,stroke-dasharray:4 3
+```
+
+The admin frame puts a menu (and a top bar on small screens) around the page, and the inbox shows
+a list of feedback next to the one that is open.
+
+<details>
+<summary>Level 2</summary>
+
+```mermaid
+flowchart TD
+  AdminLayout["AdminLayout"]:::layout
+  AppShell["AppShell"]:::component
+  TopBar["TopBar"]:::component
+  SideMenu["SideMenu"]:::component
+  Home["Inbox page<br/>/"]:::page
+  Inbox["Inbox"]:::component
+  TicketList["TicketList"]:::component
+  TicketDetail["TicketDetail"]:::component
+
+  AdminLayout --> AppShell
+  AppShell --> TopBar
+  AppShell --> SideMenu
+  AppShell --> Home
+  Home --> Inbox
+  Inbox --> TicketList
+  Inbox --> TicketDetail
+
+  classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
+  classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
+  classDef component fill:#DCFCE7,stroke:#15803D,color:#14532D
+  classDef store fill:#FFEDD5,stroke:#C2410C,color:#7C2D12
+  classDef mock fill:#F3F4F6,stroke:#4B5563,color:#1F2937,stroke-dasharray:4 3
+```
+
+</details>
+
+<details>
+<summary>Level 3</summary>
+
+```mermaid
+flowchart TD
+  MockWorkspace[/"lib/mock-workspace.ts"/]:::mock
+  MockFeedback[/"lib/mock-feedback.ts"/]:::mock
+  Store[("useTicketsStore")]:::store
+
+  AdminLayout["AdminLayout"]:::layout
+  AppShell["AppShell"]:::component
+  TopBar["TopBar"]:::component
+  SideMenu["SideMenu"]:::component
+  NavItem["NavItem"]:::component
+  UserBlock["UserBlock"]:::component
+
+  Home["/"]:::page
+  Inbox["Inbox"]:::component
+  SearchBar["SearchBar"]:::component
+  Toolbar["Toolbar"]:::component
+  TicketList["TicketList"]:::component
+  TicketRow["TicketRow"]:::component
+  TicketDetail["TicketDetail"]:::component
+  Sections["AttachmentList, ContextTable,<br/>ReplySection, ReplyActions"]:::component
+
+  MockWorkspace -- "mock: lib/mock-workspace.ts" --> AdminLayout
+  AdminLayout -- "props: user, menu, children" --> AppShell
+  AppShell -- "props: userName" --> TopBar
+  AppShell -- "props: menu" --> SideMenu
+  SideMenu -- "props: count, isActive" --> NavItem
+  SideMenu -- "props: user, workspaceName" --> UserBlock
+  AppShell -- "props: children" --> Home
+  Home --> Inbox
+  MockFeedback -- "mock: lib/mock-feedback.ts" --> Store
+  Store -- "zustand: useTicketsStore" --> SideMenu
+  Store -- "zustand: useTicketsStore" --> Inbox
+  Inbox -- "props" --> SearchBar
+  Inbox -- "props" --> Toolbar
+  Inbox -- "props" --> TicketList
+  TicketList -- "props" --> TicketRow
+  Inbox -- "props" --> TicketDetail
+  TicketDetail -- "props" --> Sections
+
+  classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
+  classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
+  classDef component fill:#DCFCE7,stroke:#15803D,color:#14532D
+  classDef store fill:#FFEDD5,stroke:#C2410C,color:#7C2D12
+  classDef mock fill:#F3F4F6,stroke:#4B5563,color:#1F2937,stroke-dasharray:4 3
+```
+
+</details>
+
+<details>
+<summary>Level 4</summary>
 
 Nesting is shown as parent → child. `Icon` (`components/Icons/Icon.tsx`) is left out to keep the
 diagram readable; it is rendered by `AppShell`, `SideMenu` (and its inner `PlatformIcon`),
@@ -112,7 +339,6 @@ flowchart TD
 
   subgraph HomePage["/"]
     Home["Home<br/>app/(admin)/page.tsx"]:::page
-    InboxContainer["InboxContainer"]:::component
     Inbox["Inbox"]:::component
     SearchBar["SearchBar"]:::component
     Toolbar["Toolbar"]:::component
@@ -126,7 +352,7 @@ flowchart TD
     ReplySection["ReplySection"]:::component
     ReplyActions["ReplyActions"]:::component
 
-    Home --> InboxContainer --> Inbox
+    Home --> Inbox
     Inbox --> SearchBar
     Inbox --> Toolbar
     Inbox --> TicketList --> TicketRow
@@ -165,13 +391,121 @@ flowchart TD
 `SideMenu` renders itself up to three times: `AdminLayout` wraps it in `<Suspense>` because
 `usePathname` can suspend on unknown platform URLs, so the fallback is the same menu with nothing
 highlighted, and the real one hands off to `SideMenuAtCurrentUrl`, which reads the URL and renders
-`SideMenu` again with `activeHref` set. The inbox is the only page with real UI; it is split into
-`InboxContainer` (connects to the store) and `Inbox` (props only, plus its own view state), and
+`SideMenu` again with `activeHref` set. The inbox is the only page with real UI; `Inbox` reads and changes
+tickets through the store and keeps its own view state, while its children get props only, and
 both `ReplySection` and `ReplyActions` are exported from the same file,
 `components/inbox/ReplySection/ReplySection.tsx`. The placeholder pages and both not-found pages
 render only HTML and `next/link`.
 
+</details>
+
 ## 3. Data flow
+
+### Level 1
+
+```mermaid
+flowchart TD
+  Sample[/"Sample data<br/>(stand-in for the database)"/]:::mock
+  Frame["Admin frame"]:::layout
+  Memory[("Shared feedback memory")]:::store
+  Menu["Menu"]:::component
+  Inbox["Inbox"]:::component
+
+  Sample -- "workspace and user" --> Frame
+  Sample -- "feedback" --> Memory
+  Frame -- "workspace and user" --> Menu
+  Memory -- "number of new feedback" --> Menu
+  Memory -- "feedback" --> Inbox
+  Inbox -. "read, replied, issue created" .-> Memory
+
+  classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
+  classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
+  classDef component fill:#DCFCE7,stroke:#15803D,color:#14532D
+  classDef store fill:#FFEDD5,stroke:#C2410C,color:#7C2D12
+  classDef mock fill:#F3F4F6,stroke:#4B5563,color:#1F2937,stroke-dasharray:4 3
+```
+
+All feedback lives in one shared memory filled from sample data, so when the inbox changes a
+feedback, the menu's count of new feedback updates at once.
+
+<details>
+<summary>Level 2</summary>
+
+```mermaid
+flowchart TD
+  MockWorkspace[/"mockWorkspace, mockUser"/]:::mock
+  MockFeedback[/"mockFeedback"/]:::mock
+  Store[("useTicketsStore")]:::store
+  AdminLayout["AdminLayout"]:::layout
+  AppShell["AppShell"]:::component
+  SideMenu["SideMenu"]:::component
+  Inbox["Inbox"]:::component
+  ResetTickets["ResetTickets<br/>on log-out"]:::component
+
+  MockWorkspace -- "mock" --> AdminLayout
+  AdminLayout -- "props" --> AppShell
+  AdminLayout -- "props" --> SideMenu
+  MockFeedback -- "mock" --> Store
+  Store -- "zustand" --> SideMenu
+  Store -- "zustand" --> Inbox
+  Inbox -. "zustand" .-> Store
+  ResetTickets -. "zustand" .-> Store
+
+  classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
+  classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
+  classDef component fill:#DCFCE7,stroke:#15803D,color:#14532D
+  classDef store fill:#FFEDD5,stroke:#C2410C,color:#7C2D12
+  classDef mock fill:#F3F4F6,stroke:#4B5563,color:#1F2937,stroke-dasharray:4 3
+```
+
+</details>
+
+<details>
+<summary>Level 3</summary>
+
+```mermaid
+flowchart TD
+  MockWorkspace[/"lib/mock-workspace.ts"/]:::mock
+  MockFeedback[/"lib/mock-feedback.ts"/]:::mock
+  Store[("useTicketsStore")]:::store
+
+  AdminLayout["AdminLayout"]:::layout
+  AppShell["AppShell"]:::component
+  TopBar["TopBar"]:::component
+  SideMenu["SideMenu"]:::component
+
+  Inbox["Inbox<br/>view state: useReducer"]:::component
+  SearchBar["SearchBar"]:::component
+  Toolbar["Toolbar"]:::component
+  TicketList["TicketList"]:::component
+  TicketDetail["TicketDetail"]:::component
+  ResetTickets["ResetTickets"]:::component
+
+  MockWorkspace -- "mock: lib/mock-workspace.ts" --> AdminLayout
+  AdminLayout -- "props: user" --> AppShell
+  AppShell -- "props: userName" --> TopBar
+  AdminLayout -- "props: workspace, user" --> SideMenu
+  MockFeedback -- "mock: lib/mock-feedback.ts" --> Store
+  Store -- "zustand: useTicketsStore" --> SideMenu
+  Store -- "zustand: useTicketsStore" --> Inbox
+  Inbox -- "props: search" --> SearchBar
+  Inbox -- "props: filters, counts" --> Toolbar
+  Inbox -- "props: visible tickets" --> TicketList
+  Inbox -- "props: selected ticket" --> TicketDetail
+  Inbox -. "zustand: useTicketsStore" .-> Store
+  ResetTickets -. "zustand: useTicketsStore" .-> Store
+
+  classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
+  classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
+  classDef component fill:#DCFCE7,stroke:#15803D,color:#14532D
+  classDef store fill:#FFEDD5,stroke:#C2410C,color:#7C2D12
+  classDef mock fill:#F3F4F6,stroke:#4B5563,color:#1F2937,stroke-dasharray:4 3
+```
+
+</details>
+
+<details>
+<summary>Level 4</summary>
 
 ```mermaid
 flowchart TD
@@ -186,7 +520,6 @@ flowchart TD
   NavItem["NavItem"]:::component
   UserBlock["UserBlock"]:::component
 
-  InboxContainer["InboxContainer"]:::component
   Inbox["Inbox<br/>view state: useReducer"]:::component
   SearchBar["SearchBar"]:::component
   Toolbar["Toolbar"]:::component
@@ -207,8 +540,7 @@ flowchart TD
   SideMenu -- "props: href, label, count, isActive" --> NavItem
   SideMenu -- "props: user, workspaceName" --> UserBlock
 
-  Store -- "zustand: useTicketsStore<br/>tickets" --> InboxContainer
-  InboxContainer -- "props: tickets + callbacks" --> Inbox
+  Store -- "zustand: useTicketsStore<br/>tickets" --> Inbox
   Inbox -- "props: search" --> SearchBar
   Inbox -- "props: filters, sortOrder, counts" --> Toolbar
   Inbox -- "props: visible tickets, selectedId, now" --> TicketList
@@ -216,8 +548,7 @@ flowchart TD
   Inbox -- "props: selected ticket, replyDraft, notice" --> TicketDetail
   TicketDetail -- "props: ticket fields" --> Sections
 
-  Inbox -. "props: onOpenTicket, onSendReply, onCreateIssue" .-> InboxContainer
-  InboxContainer -. "zustand: useTicketsStore<br/>markRead, sendReply, createIssue" .-> Store
+  Inbox -. "zustand: useTicketsStore<br/>markRead, sendReply, createIssue" .-> Store
   ResetTickets -. "zustand: useTicketsStore<br/>resetTickets" .-> Store
 
   classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
@@ -232,8 +563,8 @@ passes them down as props, while ticket data lives in one Zustand store, `useTic
 is seeded from `mockFeedback` and read by both the side menu (unread counts) and the inbox, so
 opening a ticket updates the menu count at once. All ticket changes go through the store's action
 functions (`markRead`, `sendReply`, `createIssue`, `resetTickets`), which run the pure
-`ticketsReducer` in `lib/tickets/state.ts`; `Inbox` never touches the store itself but gets those
-functions as callbacks from `InboxContainer`. Search, filters, sort order, the open ticket, the
+`ticketsReducer` in `lib/tickets/state.ts`; `Inbox` calls them directly, and its children only
+get callbacks from `Inbox`. Search, filters, sort order, the open ticket, the
 reply draft and the notice are local `useReducer` state in `Inbox` (`lib/inbox/state.ts`), flow
 down as props, and reset when the page is hidden; the highlighted menu item comes from the URL
 (`usePathname`), not from any store.
@@ -249,3 +580,5 @@ Unclear in the code:
   is not written down.
 - The side menu shows unread counts per platform, but `/platforms/[platform]` does not read the
   store or filter tickets yet; it is a placeholder.
+
+</details>
