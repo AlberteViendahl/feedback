@@ -309,12 +309,12 @@ flowchart TD
 
 Nesting is shown as parent → child. Icons are left out to keep the diagram readable. `Icon`
 (`components/Icons/Icon.tsx`, an image from `public/icons`) is rendered by `AppShell`, `SideMenu`
-(and its inner `PlatformIcon`), `UserBlock`, `UserAvatar`, `CategoryIcon`, `SearchBar`, `Toolbar`,
+(and its inner `PlatformIcon`), `UserBlock`, `UserAvatar`, `SearchBar`, `Toolbar`,
 `AttachmentList`, `ContextTable` and `ReplyActions`. The inline SVG icons in `components/Icons`
 take their size from the global `icon-size` class in `app/globals.css` and their dark colour from
-the surrounding text (`currentColor`): `TicketDetail` renders `BugIcon`, `TicketRow` renders
-`PaperclipIcon` and `ReplyActions` renders `BranchIcon`; `ArrowLeftIcon`, `LightbulbIcon` and
-`MessageIcon` are not rendered yet.
+the surrounding text (`currentColor`): `CategoryBadge` renders `BugIcon`, `LightbulbIcon` or
+`MessageIcon` for the ticket's category, `TicketDetail` renders `BugIcon`, `TicketRow` renders
+`PaperclipIcon` and `ReplyActions` renders `BranchIcon`; `ArrowLeftIcon` is not rendered yet.
 
 ```mermaid
 flowchart TD
@@ -351,7 +351,7 @@ flowchart TD
     Toolbar["Toolbar"]:::component
     TicketList["TicketList"]:::component
     TicketRow["TicketRow ×n"]:::component
-    CategoryIcon["CategoryIcon"]:::component
+    CategoryBadge["CategoryBadge<br/>(in TicketRow.tsx)"]:::component
     StatusBadge["StatusBadge"]:::component
     TicketDetail["TicketDetail"]:::component
     AttachmentList["AttachmentList"]:::component
@@ -363,7 +363,7 @@ flowchart TD
     Inbox --> SearchBar
     Inbox --> Toolbar
     Inbox --> TicketList --> TicketRow
-    TicketRow --> CategoryIcon
+    TicketRow --> CategoryBadge
     TicketRow --> StatusBadge
     Inbox --> TicketDetail
     TicketDetail --> AttachmentList
