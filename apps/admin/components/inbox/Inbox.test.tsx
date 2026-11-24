@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { at, fixtureTickets, makeTicket } from "@/lib/inbox/test-fixtures";
 import { useTicketsStore } from "@/lib/tickets/store";
-import { InboxContainer } from "./InboxContainer";
+import { Inbox } from "./Inbox";
 
 // Only the system clock is faked (no fake timers), so userEvent keeps working.
 beforeEach(() => {
@@ -17,7 +17,7 @@ afterEach(() => {
 
 function renderInbox(tickets = fixtureTickets) {
   useTicketsStore.setState({ tickets });
-  render(<InboxContainer />);
+  render(<Inbox />);
   return { list: screen.getByRole("list", { name: "Feedback" }) };
 }
 
@@ -282,10 +282,10 @@ describe("Inbox – searching (spec 003, US1)", () => {
 
   it("starts empty again when the inbox remounts (FR-015)", async () => {
     useTicketsStore.setState({ tickets: fixtureTickets });
-    const { rerender } = render(<InboxContainer key="first" />);
+    const { rerender } = render(<Inbox key="first" />);
     await userEvent.type(searchField(), "forslag");
 
-    rerender(<InboxContainer key="second" />);
+    rerender(<Inbox key="second" />);
     expect((searchField() as HTMLInputElement).value).toBe("");
     expect(rowTitles(screen.getByRole("list", { name: "Feedback" }))).toHaveLength(fixtureTickets.length);
   });
@@ -296,7 +296,7 @@ describe("Inbox – searching (spec 003, US1)", () => {
     function Page({ mode }: { mode: "visible" | "hidden" }) {
       return (
         <Activity mode={mode}>
-          <InboxContainer />
+          <Inbox />
         </Activity>
       );
     }
