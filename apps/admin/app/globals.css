@@ -35,6 +35,7 @@
   --brand-text: #4338ca;
   --brand-soft: #eef0ff;
   --brand-soft-active: #eceaff;
+  --brand-soft-border: #dbd8fc; /* soft brand button, e.g. "Tilføj ny kategori" (Figma 323:1495) */
 
   /* Status */
   --info-bg: #eef0ff;
@@ -54,10 +55,32 @@
   --danger-bg: #fff0f1;
   --danger-fg: #be3f59;
 
-  /* Circles behind the category icons in the ticket list */
-  --category-bug-bg: #ffe8ed;
-  --category-idea-bg: #fff3d4;
-  --category-general-bg: #dff4ee;
+  /* Category colours (spec 006, research R7): the colour chosen by the user (swatch), a darker
+     shade for the icon (at least 4.5:1 on the tint), and a 15% tint for the circle behind it. */
+  --category-red: #ff0000;
+  --category-red-fg: #cc0000;
+  --category-red-bg: #ffd9d9;
+  --category-orange: #f48e00;
+  --category-orange-fg: #9f5c00;
+  --category-orange-bg: #fdeed9;
+  --category-yellow: #f4ec00;
+  --category-yellow-fg: #7a7600;
+  --category-yellow-bg: #fdfcd9;
+  --category-green: #62f400;
+  --category-green-fg: #317a00;
+  --category-green-bg: #e7fdd9;
+  --category-teal: #00f4ec;
+  --category-teal-fg: #007a76;
+  --category-teal-bg: #d9fdfc;
+  --category-blue: #0076f4;
+  --category-blue-fg: #0064cf;
+  --category-blue-bg: #d9eafd;
+  --category-purple: #9200f4;
+  --category-purple-fg: #9200f4;
+  --category-purple-bg: #efd9fd;
+  --category-pink: #f40086;
+  --category-pink-fg: #c3006b;
+  --category-pink-bg: #fdd9ed;
 
   /* Radii */
   --radius-sm: 8px; /* buttons */
@@ -65,6 +88,7 @@
   --radius-md: 10px; /* attachments, textarea */
   --radius-nav: 11px; /* sidebar nav row */
   --radius-lg: 14px; /* cards, panels, chips */
+  --radius-xl: 20px; /* settings cards, dialogs (Figma 323:1460, 415:533) */
   --radius-pill: 999px; /* filters, search, badges */
 
   /* Typography */
@@ -75,6 +99,7 @@
   --font-size-title: 13.5px;
   --font-size-md: 14px;
   --font-size-lg: 16px;
+  --font-size-xl: 18px; /* dialog title (Figma 415:534) */
   --font-size-display: 26px;
   --font-size-glyph: 24px; /* ☰ menu button */
   --font-weight-regular: 400;
@@ -92,6 +117,15 @@
   --drawer-duration: 200ms;
   --stat-card-width: 264px; /* key number card on tablet and smaller (Figma) */
   --icon-size: 16px; /* inline SVG icons, see .icon-size */
+
+  /* Settings page (spec 006, Figma 323:1459, 415:533) */
+  --modal-width: 480px;
+  --modal-padding: 23px;
+  --modal-shadow: 0 12px 16px rgba(0, 0, 0, 0.12);
+  --switch-width: 56px;
+  --switch-height: 28px;
+  --swatch-size: 23px;
+  --swatch-gap: 28px;
 
   /* Feedback inbox (Figma node 323:1906) */
   --inbox-height: 769px;
@@ -543,9 +577,14 @@ body {
     height: 31px;
     border-radius: 50%;
   }
-  .category-badge--bug { background: var(--category-bug-bg); color: var(--danger-fg); }
-  .category-badge--idea { background: var(--category-idea-bg); }
-  .category-badge--general { background: var(--category-general-bg); }
+  .category-badge--red { background: var(--category-red-bg); color: var(--category-red-fg); }
+  .category-badge--orange { background: var(--category-orange-bg); color: var(--category-orange-fg); }
+  .category-badge--yellow { background: var(--category-yellow-bg); color: var(--category-yellow-fg); }
+  .category-badge--green { background: var(--category-green-bg); color: var(--category-green-fg); }
+  .category-badge--teal { background: var(--category-teal-bg); color: var(--category-teal-fg); }
+  .category-badge--blue { background: var(--category-blue-bg); color: var(--category-blue-fg); }
+  .category-badge--purple { background: var(--category-purple-bg); color: var(--category-purple-fg); }
+  .category-badge--pink { background: var(--category-pink-bg); color: var(--category-pink-fg); }
 
   .list-row--selected {
     background: var(--surface-muted);
@@ -1073,4 +1112,309 @@ body {
     white-space: pre-line;
     overflow-wrap: anywhere;
   }
+
+  /* ---------- Settings: categories (spec 006, Figma 323:1459 / 356:603) ---------- */
+
+  .settings-card {
+    margin-top: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
+
+  .settings-card__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    font-size: var(--font-size-md);
+    line-height: 1.25;
+  }
+
+  .settings-card__title {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+  }
+
+  .settings-card__subtitle {
+    color: var(--text-muted);
+  }
+
+  .button--soft {
+    flex-shrink: 0;
+    padding: 0 18px;
+    background: var(--brand-soft);
+    border-color: var(--brand-soft-border);
+    font-size: var(--font-size-xs);
+    color: var(--brand-text);
+  }
+
+  .button--soft__plus {
+    font-size: var(--font-size-glyph);
+    line-height: 1;
+  }
+
+  .category-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 19px 28px 19px 59px;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+  }
+
+  .category-row + .category-row {
+    border-top: 1px solid var(--border-color);
+  }
+
+  .category-row__label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* Mobile and tablet: tighter padding, and the button moves under the title (Figma 356:1325). */
+  @media (width < theme(--breakpoint-lg)) {
+    .settings-card__header {
+      padding: 16px;
+    }
+
+    .category-row {
+      padding: 16px;
+    }
+  }
+
+  @media (width < theme(--breakpoint-sm)) {
+    .settings-card__header {
+      flex-direction: column;
+    }
+  }
+
+  /* On/off switch (Figma 137:622 "Oskar - Toggle"). */
+  .switch {
+    position: relative;
+    flex-shrink: 0;
+    width: var(--switch-width);
+    height: var(--switch-height);
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+  }
+
+  .switch::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: calc(var(--switch-height) - 8px);
+    height: calc(var(--switch-height) - 8px);
+    background: var(--surface-inverse);
+    border-radius: 50%;
+  }
+
+  .switch[aria-checked="true"] {
+    background: var(--brand);
+    border-color: var(--brand);
+  }
+
+  .switch[aria-checked="true"]::after {
+    left: auto;
+    right: 3px;
+    background: var(--surface);
+  }
+
+  /* ---------- Dialog (Figma 415:533) ---------- */
+
+  .modal {
+    width: min(var(--modal-width), calc(100vw - 2 * var(--page-padding-compact)));
+    max-height: calc(100dvh - 2 * var(--page-padding-compact));
+    margin: auto;
+    padding: 0;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--modal-shadow);
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+
+  .modal::backdrop {
+    background: var(--backdrop);
+  }
+
+  .modal__body {
+    display: flex;
+    flex-direction: column;
+    padding: 19px var(--modal-padding) 24px;
+  }
+
+  .modal__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .modal__title {
+    margin-top: 3px;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .modal__description {
+    margin-top: 4px;
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+  }
+
+  .modal__label {
+    margin-top: 28px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .modal__hint {
+    margin-top: 9px;
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+  }
+
+  .modal__error {
+    margin-top: 9px;
+    font-size: var(--font-size-xs);
+    color: var(--danger-fg);
+  }
+
+  .modal__fieldset {
+    margin-top: 24px;
+    padding: 0;
+    border: 0;
+  }
+
+  .modal__legend {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    line-height: 18px;
+    color: var(--text-secondary);
+  }
+
+  .modal__legend-hint {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-regular);
+  }
+
+  .modal__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 17px var(--modal-padding) 23px;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .modal__footer .button {
+    padding: 0 16px;
+  }
+
+  .text-input {
+    width: 100%;
+    height: 44px;
+    margin-top: 8px;
+    padding: 0 16px;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-sm);
+    color: var(--text-primary);
+  }
+
+  .text-input::placeholder {
+    color: var(--text-secondary);
+  }
+
+  .text-input[aria-invalid="true"] {
+    border-color: var(--danger-fg);
+  }
+
+  /* Icon choices: four per row, the chosen one highlighted (Figma 420:2582). */
+  .icon-choices {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  @media (width < theme(--breakpoint-sm)) {
+    .icon-choices {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .icon-choice {
+    --icon-size: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    padding: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+
+  .icon-choice:has(input:checked) {
+    padding: 7px;
+    background: var(--brand-soft);
+    border: 2px solid var(--brand);
+    font-weight: var(--font-weight-semibold);
+    color: var(--brand-text);
+  }
+
+  .color-choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--swatch-gap);
+    margin-top: 12px;
+  }
+
+  .color-choice {
+    width: var(--swatch-size);
+    height: var(--swatch-size);
+    background: var(--swatch);
+    border: 1px solid var(--surface-inverse);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .color-choice:has(input:checked) {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+
+  /* The radio inputs are hidden but focusable; the label shows the focus ring. */
+  :is(.icon-choice, .color-choice):has(input:focus-visible) {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+
+  .button--primary {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: var(--text-inverse);
+  }
+
 }
