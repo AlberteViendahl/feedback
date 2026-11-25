@@ -1,5 +1,5 @@
 import type { CategoryFilter, SortOrder, StatusFilter } from "@/lib/inbox/state";
-import { CATEGORY_LABELS } from "@/lib/inbox/format";
+import type { Category } from "@/lib/types";
 import { Icon } from "@/components/Icons/Icon";
 
 type ToolbarProps = {
@@ -7,27 +7,19 @@ type ToolbarProps = {
   categoryFilter: CategoryFilter;
   sortOrder: SortOrder;
   counts: { all: number; done: number };
+  /** Every category, on or off, in list order (spec 006, FR-017, FR-018). */
+  categories: Category[];
   onStatusFilterChange: (value: StatusFilter) => void;
   onCategoryFilterChange: (value: CategoryFilter) => void;
   onSortOrderChange: (value: SortOrder) => void;
 };
-
-const CATEGORY_OPTIONS: { value: CategoryFilter; label: string }[] = [
-  { value: "all", label: "Alle" },
-  { value: "bug", label: CATEGORY_LABELS.bug },
-  { value: "idea", label: CATEGORY_LABELS.idea },
-  { value: "general", label: CATEGORY_LABELS.general },
-];
-
-function isCategoryFilter(value: string): value is CategoryFilter {
-  return CATEGORY_OPTIONS.some((option) => option.value === value);
-}
 
 export function Toolbar({
   statusFilter,
   categoryFilter,
   sortOrder,
   counts,
+  categories,
   onStatusFilterChange,
   onCategoryFilterChange,
   onSortOrderChange,
@@ -35,6 +27,10 @@ export function Toolbar({
   const statusOptions: { value: StatusFilter; label: string }[] = [
     { value: "all", label: `Alle ${counts.all}` },
     { value: "done", label: `Færdig ${counts.done}` },
+  ];
+  const categoryOptions: { value: CategoryFilter; label: string }[] = [
+    { value: "all", label: "Alle" },
+    ...categories.map((category) => ({ value: category._id, label: category.name })),
   ];
 
   return (
@@ -63,10 +59,11 @@ export function Toolbar({
           className="inbox__select"
           value={categoryFilter}
           onChange={(event) => {
-            if (isCategoryFilter(event.target.value)) onCategoryFilterChange(event.target.value);
+            const value = event.target.value;
+            if (categoryOptions.some((option) => option.value === value)) onCategoryFilterChange(value);
           }}
         >
-          {CATEGORY_OPTIONS.map((option) => (
+          {categoryOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>

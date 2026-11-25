@@ -1,7 +1,10 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { getCategory } from "@/lib/categories/state";
 import { at, makeTicket } from "@/lib/inbox/test-fixtures";
+import { mockCategories } from "@/lib/mock-categories";
+import type { Category } from "@/lib/types";
 import { TicketRow } from "./TicketRow";
 
 const now = at("2026-11-17T11:42:00+01:00");
@@ -18,7 +21,17 @@ const ticket = makeTicket({
 
 function renderRow(props: Partial<Parameters<typeof TicketRow>[0]> = {}) {
   const onSelect = vi.fn();
-  render(<TicketRow ticket={ticket} isSelected={false} now={now} onSelect={onSelect} {...props} />);
+  const shown = props.ticket ?? ticket;
+  render(
+    <TicketRow
+      ticket={shown}
+      category={getCategory(mockCategories, shown.category)}
+      isSelected={false}
+      now={now}
+      onSelect={onSelect}
+      {...props}
+    />,
+  );
   return { onSelect, row: screen.getByRole("button") };
 }
 
@@ -35,14 +48,33 @@ describe("TicketRow", () => {
   });
 
   it.each([
-    ["bug", "Fejl"],
-    ["idea", "Forslag"],
-    ["general", "Generel feedback"],
-  ] as const)("shows the %s icon named %s", (category, label) => {
+    ["bug", "Fejl", "red"],
+    ["idea", "Forslag", "yellow"],
+    ["general", "Generel feedback", "teal"],
+  ] as const)("shows the %s icon named %s in %s", (category, label, color) => {
     renderRow({ ticket: { ...ticket, category } });
     expect(screen.getByRole("img", { name: label }).parentElement?.className).toBe(
-      `category-badge category-badge--${category}`,
+      `category-badge category-badge--${color}`,
     );
+  });
+
+  it("draws an added category with its own icon, name and colour (spec 006, FR-015)", () => {
+    const added: Category = {
+      ...mockCategories[0],
+      _id: "c1",
+      name: "Forbedring",
+      icon: "inbox",
+      color: "blue",
+    };
+    renderRow({ ticket: { ...ticket, category: "c1" }, category: added });
+    expect(screen.getByRole("img", { name: "Forbedring" }).parentElement?.className).toBe(
+      "category-badge category-badge--blue",
+    );
+  });
+
+  it("shows no category icon for an unknown category", () => {
+    const { row } = renderRow({ category: undefined });
+    expect(row.querySelector(".category-badge")).toBeNull();
   });
 
   it("shows the date while the current time is unknown", () => {

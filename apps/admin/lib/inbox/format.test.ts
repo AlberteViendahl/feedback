@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  CATEGORY_LABELS,
   formatDateTime,
   formatDuration,
   formatFileSize,
@@ -76,9 +75,5 @@ describe("small formatters", () => {
   it("returns anything that is not a web address unchanged", () => {
     expect(getPagePath("javascript:alert(1)")).toBe("javascript:alert(1)");
     expect(getPagePath("not a url")).toBe("not a url");
-  });
-
-  it("has Danish labels for categories", () => {
-    expect(CATEGORY_LABELS).toEqual({ bug: "Fejl", idea: "Forslag", general: "Generel feedback" });
   });
 });

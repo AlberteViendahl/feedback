@@ -8,7 +8,7 @@ export function LightbulbIcon(props: SvgIconProps) {
         strokeWidth="17"
         strokeLinecap="round"
         strokeLinejoin="round"
-        stroke="#9A6700"
+        stroke="currentColor"
       />
     </svg>
   );

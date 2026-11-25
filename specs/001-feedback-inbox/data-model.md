@@ -6,6 +6,11 @@ All shared types live in `apps/admin/lib/types.ts` (Constitution II) and mirror 
 `feedback` table. When `convex/schema.ts` is written, these types are replaced by Convex's
 generated `Doc<"feedback">` and the handwritten module is deleted.
 
+> **Changed 2026-11-25:** `FeedbackCategory` was removed (spec 006). `Feedback.category` now holds
+> the `_id` of a `Category`, kept in its own store (`lib/categories/store.ts`); the built-in ids
+> are still `bug`, `idea` and `general`. Category names, icons and colours come from that store,
+> and `categoryFilter` is `"all"` or a category id. Below, read `FeedbackCategory` as a category id.
+
 ## Enumerations
 
 | Type | Values | Danish label (UI) |

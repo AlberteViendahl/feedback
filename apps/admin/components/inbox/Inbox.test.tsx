@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import { Activity } from "react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { addCategory, toggleCategory } from "@/lib/categories/store";
 import { at, fixtureTickets, makeTicket } from "@/lib/inbox/test-fixtures";
 import { useTicketsStore } from "@/lib/tickets/store";
 import { Inbox } from "./Inbox";
@@ -371,5 +372,32 @@ describe("Inbox – key numbers (spec 005)", () => {
     await userEvent.type(screen.getByRole("searchbox", { name: "Søg i feedback" }), "forslag");
     await userEvent.selectOptions(screen.getByRole("combobox", { name: /Kategori/ }), "Fejl");
     expect(cardNumbers()).toEqual(before);
+  });
+});
+
+describe("Inbox – categories from settings (spec 006)", () => {
+  const categorySelect = () => screen.getByRole("combobox", { name: /Kategori/ }) as HTMLSelectElement;
+
+  it("offers a category added in settings in the filter, after the others (FR-018)", async () => {
+    addCategory({ name: "Forbedring", icon: "inbox", color: "blue" });
+    renderInbox();
+    expect(Array.from(categorySelect().options).map((option) => option.textContent)).toEqual([
+      "Alle",
+      "Fejl",
+      "Forslag",
+      "Generel feedback",
+      "Forbedring",
+    ]);
+
+    await userEvent.selectOptions(categorySelect(), "Forbedring");
+    expect(screen.getByText("Ingen feedback matcher filtrene.")).toBeTruthy();
+  });
+
+  it("is unchanged when a category is switched off (FR-017)", async () => {
+    toggleCategory("bug");
+    const { list } = renderInbox();
+    expect(within(list).getAllByText("Første fejl")).toHaveLength(1);
+    await userEvent.selectOptions(categorySelect(), "Fejl");
+    expect(rowTitles(list)).toEqual(["Første fejl", "Løst fejl"]);
   });
 });

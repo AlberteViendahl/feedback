@@ -1,6 +1,6 @@
-import { CATEGORY_LABELS, formatDateTime, formatTicketNumber } from "@/lib/inbox/format";
+import { formatDateTime, formatTicketNumber } from "@/lib/inbox/format";
 import type { InboxNotice } from "@/lib/inbox/state";
-import type { Feedback } from "@/lib/types";
+import type { Category, Feedback } from "@/lib/types";
 import { AttachmentList } from "../AttachmentList/AttachmentList";
 import { ContextTable } from "../ContextTable/ContextTable";
 import { BugIcon } from "@/components/Icons/BugIcon";
@@ -8,6 +8,8 @@ import { ReplyActions, ReplySection } from "../ReplySection/ReplySection";
 
 type TicketDetailProps = {
   ticket: Feedback | null;
+  /** The open ticket's category; undefined shows no name. */
+  category: Category | undefined;
   replyDraft: string;
   notice: InboxNotice;
   onReplyDraftChange: (text: string) => void;
@@ -17,6 +19,7 @@ type TicketDetailProps = {
 
 export function TicketDetail({
   ticket,
+  category,
   replyDraft,
   notice,
   onReplyDraftChange,
@@ -36,7 +39,7 @@ export function TicketDetail({
         <span className="chip">
           {/* Figma only has a small icon for Fejl (FR-012). */}
           {ticket.category === "bug" && <BugIcon />}
-          {CATEGORY_LABELS[ticket.category]}
+          {category?.name}
         </span>
         <h2 className="detail__number">{formatTicketNumber(ticket.number)}</h2>
       </header>
