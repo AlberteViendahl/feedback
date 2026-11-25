@@ -1,16 +1,9 @@
-import type { FeedbackCategory } from "@/lib/types";
 import { isSafeHttpUrl } from "./safe-url";
 
 // Fixed time zone so pre-rendered HTML and the browser produce identical text (research R3).
 const TIME_ZONE = "Europe/Copenhagen";
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
-
-export const CATEGORY_LABELS: Record<FeedbackCategory, string> = {
-  bug: "Fejl",
-  idea: "Forslag",
-  general: "Generel feedback",
-};
 
 const dayKeyFormat = new Intl.DateTimeFormat("en-CA", {
   timeZone: TIME_ZONE,

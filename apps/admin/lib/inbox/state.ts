@@ -1,10 +1,10 @@
-import type { FeedbackCategory } from "@/lib/types";
+import type { Category } from "@/lib/types";
 
 // The inbox's view state only. Ticket data lives in lib/tickets/state.ts and is shared by
 // every admin page (spec 002); this state resets whenever the inbox remounts.
 
 export type StatusFilter = "all" | "done";
-export type CategoryFilter = "all" | FeedbackCategory;
+export type CategoryFilter = "all" | Category["_id"];
 export type SortOrder = "newest" | "oldest";
 export type InboxNotice = "reply-sent" | "issue-created" | null;
 
