@@ -8,7 +8,7 @@ export function MessageIcon(props: SvgIconProps) {
         strokeWidth="15"
         strokeLinecap="round"
         strokeLinejoin="round"
-        stroke="#0F766E"
+        stroke="currentColor"
       />
     </svg>
   );

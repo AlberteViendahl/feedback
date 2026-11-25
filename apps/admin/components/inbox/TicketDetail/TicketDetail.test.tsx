@@ -1,6 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import { getCategory } from "@/lib/categories/state";
 import { STANDARD_REPLY } from "@/lib/inbox/state";
+import { mockCategories } from "@/lib/mock-categories";
 import { at, makeTicket } from "@/lib/inbox/test-fixtures";
 import type { Feedback } from "@/lib/types";
 import { TicketDetail } from "./TicketDetail";
@@ -17,6 +19,7 @@ function renderDetail(shown: Feedback | null) {
   return render(
     <TicketDetail
       ticket={shown}
+      category={shown ? getCategory(mockCategories, shown.category) : undefined}
       replyDraft={STANDARD_REPLY}
       notice={null}
       onReplyDraftChange={vi.fn()}

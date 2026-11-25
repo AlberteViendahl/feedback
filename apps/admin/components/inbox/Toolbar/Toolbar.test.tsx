@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { mockCategories } from "@/lib/mock-categories";
 import { Toolbar } from "./Toolbar";
 
 function renderToolbar(overrides: Partial<Parameters<typeof Toolbar>[0]> = {}) {
@@ -9,6 +10,7 @@ function renderToolbar(overrides: Partial<Parameters<typeof Toolbar>[0]> = {}) {
     categoryFilter: "all" as const,
     sortOrder: "newest" as const,
     counts: { all: 65, done: 48 },
+    categories: mockCategories,
     onStatusFilterChange: vi.fn(),
     onCategoryFilterChange: vi.fn(),
     onSortOrderChange: vi.fn(),
