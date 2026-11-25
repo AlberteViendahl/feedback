@@ -19,6 +19,9 @@ each sub-component in its own folder named after it, no `index.ts` files.
 > route group, so `/platforms/<unknown>` still shows it with the menu. Below, read the
 > `/platforms/<unknown>` row as `app/not-found.tsx`, menu yes.
 
+> **Changed 2026-11-25:** `/settings` is no longer a placeholder: it shows the Categories card
+> from spec 006.
+
 ## Routes
 
 | URL | File | Menu | Highlighted item |
