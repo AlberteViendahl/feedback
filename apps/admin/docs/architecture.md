@@ -48,7 +48,8 @@ flowchart TD
   Base["Base frame"]:::layout
   Admin["Admin area with menu"]:::layout
   Inbox["Feedback inbox"]:::page
-  Empty["Empty pages for later"]:::page
+  Settings["Settings: categories"]:::page
+  Empty["Empty platform pages for later"]:::page
   Out["Logged-out page"]:::page
   Missing["Page not found"]:::page
 
@@ -56,6 +57,7 @@ flowchart TD
   Base --> Out
   Base --> Missing
   Admin --> Inbox
+  Admin --> Settings
   Admin --> Empty
   Admin -. "unknown platform" .-> Missing
 
@@ -66,8 +68,8 @@ flowchart TD
   classDef mock fill:#F3F4F6,stroke:#4B5563,color:#1F2937,stroke-dasharray:4 3
 ```
 
-Every page sits in one base frame; the inbox and the empty pages also get the admin menu, while
-the logged-out page does not. There is one page-not-found page: it shows the menu for an unknown
+Every page sits in one base frame; the inbox, the settings page and the empty platform pages also
+get the admin menu, while the logged-out page does not. There is one page-not-found page: it shows the menu for an unknown
 platform, and no menu for any other unknown address.
 
 <details>
@@ -79,7 +81,7 @@ flowchart TD
   Admin["AdminLayout<br/>(admin) group"]:::layout
   Home["Inbox<br/>/"]:::page
   Platform["Platform page<br/>/platforms/[platform]"]:::page
-  Settings["Settings<br/>/settings"]:::page
+  Settings["Settings<br/>/settings<br/>categories"]:::page
   LoggedOut["Logged out<br/>/logged-out"]:::page
   NotFound["Not found<br/>menu only for an unknown platform"]:::page
 
@@ -107,7 +109,9 @@ flowchart TD
 flowchart TD
   MockWorkspace[/"lib/mock-workspace.ts"/]:::mock
   MockFeedback[/"lib/mock-feedback.ts"/]:::mock
+  MockCategories[/"lib/mock-categories.ts"/]:::mock
   Store[("useTicketsStore")]:::store
+  CategoryStore[("useCategoriesStore")]:::store
 
   Root["RootLayout"]:::layout
   Admin["AdminLayout"]:::layout
@@ -118,6 +122,7 @@ flowchart TD
   Inbox["Inbox"]:::component
   Platform["/platforms/[platform]"]:::page
   Settings["/settings"]:::page
+  CategorySettings["CategorySettings"]:::component
 
   LoggedOut["/logged-out"]:::page
   ResetTickets["ResetTickets"]:::component
@@ -135,12 +140,17 @@ flowchart TD
   Platform -. "notFound()" .-> NotFound
   AppShell -. "children, for notFound() in (admin)" .-> NotFound
   Home --> Inbox
+  Settings --> CategorySettings
   LoggedOut --> ResetTickets
 
   MockFeedback -- "mock: lib/mock-feedback.ts" --> Store
   Store -- "zustand: useTicketsStore" --> SideMenu
   Store -- "zustand: useTicketsStore" --> Inbox
   ResetTickets -. "zustand: useTicketsStore" .-> Store
+  MockCategories -- "mock: lib/mock-categories.ts" --> CategoryStore
+  CategoryStore -- "zustand: useCategoriesStore" --> CategorySettings
+  CategoryStore -- "zustand: useCategoriesStore" --> Inbox
+  ResetTickets -. "zustand: useCategoriesStore" .-> CategoryStore
 
   classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
   classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
@@ -190,7 +200,8 @@ Next.js also puts it as the not-found boundary inside `AdminLayout`, so `notFoun
 `/platforms/[platform]` (which builds only `geotracking` and `simpleserp`) renders it inside the
 admin frame, with the menu. This comes from Next.js, not from our code: the server HTML for
 `/platforms/foo` leaves the menu out, but the page the browser renders has it.
-`/platforms/[platform]` and `/settings` are placeholders with a heading only.
+`/platforms/[platform]` is a placeholder with a heading only; `/settings` shows the Categories card
+(spec 006).
 
 </details>
 
@@ -206,12 +217,16 @@ flowchart TD
   Inbox["Feedback inbox"]:::page
   KeyNums["Key numbers"]:::component
   Parts["List of feedback and the open feedback"]:::component
+  Settings["Settings"]:::page
+  Categories["Category list and the add dialog"]:::component
 
   Frame --> TopBar
   Frame --> Menu
   Frame --> Inbox
   Inbox --> KeyNums
   Inbox --> Parts
+  Frame --> Settings
+  Settings --> Categories
 
   classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
   classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
@@ -220,8 +235,9 @@ flowchart TD
   classDef mock fill:#F3F4F6,stroke:#4B5563,color:#1F2937,stroke-dasharray:4 3
 ```
 
-The admin frame puts a menu (and a top bar on small screens) around the page, and the inbox shows
-a row of key numbers above a list of feedback next to the one that is open.
+The admin frame puts a menu (and a top bar on small screens) around the page. The inbox shows a
+row of key numbers above a list of feedback next to the one that is open; the settings page shows
+the categories, each with an on/off switch, and a dialog to add one.
 
 <details>
 <summary>Level 2</summary>
@@ -237,6 +253,10 @@ flowchart TD
   KeyNumbers["KeyNumbers"]:::component
   TicketList["TicketList"]:::component
   TicketDetail["TicketDetail"]:::component
+  Settings["Settings page<br/>/settings"]:::page
+  CategorySettings["CategorySettings"]:::component
+  CategoryRow["CategoryRow"]:::component
+  AddCategoryModal["AddCategoryModal"]:::component
 
   AdminLayout --> AppShell
   AppShell --> TopBar
@@ -246,6 +266,10 @@ flowchart TD
   Inbox --> KeyNumbers
   Inbox --> TicketList
   Inbox --> TicketDetail
+  AppShell --> Settings
+  Settings --> CategorySettings
+  CategorySettings --> CategoryRow
+  CategorySettings --> AddCategoryModal
 
   classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
   classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
@@ -263,7 +287,9 @@ flowchart TD
 flowchart TD
   MockWorkspace[/"lib/mock-workspace.ts"/]:::mock
   MockFeedback[/"lib/mock-feedback.ts"/]:::mock
+  MockCategories[/"lib/mock-categories.ts"/]:::mock
   Store[("useTicketsStore")]:::store
+  CategoryStore[("useCategoriesStore")]:::store
 
   AdminLayout["AdminLayout"]:::layout
   AppShell["AppShell"]:::component
@@ -281,6 +307,11 @@ flowchart TD
   TicketRow["TicketRow"]:::component
   TicketDetail["TicketDetail"]:::component
   Sections["AttachmentList, ContextTable,<br/>ReplySection, ReplyActions"]:::component
+
+  Settings["/settings"]:::page
+  CategorySettings["CategorySettings"]:::component
+  CategoryRow["CategoryRow ×n"]:::component
+  AddCategoryModal["AddCategoryModal"]:::component
 
   MockWorkspace -- "mock: lib/mock-workspace.ts" --> AdminLayout
   AdminLayout -- "props: user, menu, children" --> AppShell
@@ -300,6 +331,13 @@ flowchart TD
   TicketList -- "props" --> TicketRow
   Inbox -- "props" --> TicketDetail
   TicketDetail -- "props" --> Sections
+  AppShell -- "props: children" --> Settings
+  Settings --> CategorySettings
+  MockCategories -- "mock: lib/mock-categories.ts" --> CategoryStore
+  CategoryStore -- "zustand: useCategoriesStore" --> CategorySettings
+  CategoryStore -- "zustand: useCategoriesStore" --> Inbox
+  CategorySettings -- "props" --> CategoryRow
+  CategorySettings -- "props" --> AddCategoryModal
 
   classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
   classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
@@ -317,12 +355,13 @@ Nesting is shown as parent → child. Icons are left out to keep the diagram rea
 (`components/Icons/Icon.tsx`, an image from `public/icons`) is rendered by `AppShell`, `SideMenu`
 (and its inner `PlatformIcon`), `UserBlock`, `UserAvatar`, `SearchBar`, `Toolbar`,
 `AttachmentList`, `ContextTable` and `ReplyActions`. The inline SVG icons in `components/Icons`
-take their size from the global `icon-size` class in `app/globals.css`, and all but `LightbulbIcon`
-and `MessageIcon` take their colour from the surrounding text (`currentColor`): `KeyNumbers`
-renders `InboxIcon`, `ProgressIcon`, `CheckIcon` and `BugIcon` in its cards' colours,
-`CategoryBadge` renders `BugIcon` (red from `.category-badge--bug`), `LightbulbIcon` or
-`MessageIcon` for the ticket's category, `TicketDetail` renders `BugIcon`, `TicketRow` renders
-`PaperclipIcon` and `ReplyActions` renders `BranchIcon`; `ArrowLeftIcon` is not rendered yet.
+take their size from the global `icon-size` class in `app/globals.css` and their colour from the
+surrounding text (`currentColor`). `KeyNumbers` renders `InboxIcon`, `ProgressIcon`, `CheckIcon`
+and `BugIcon` in its cards' colours, `TicketDetail` renders `BugIcon`, `TicketRow` renders
+`PaperclipIcon` and `ReplyActions` renders `BranchIcon`. A category's icon is looked up in
+`CATEGORY_ICONS` (`components/Icons/category-icons.ts`, one of seven SVG icons) and drawn inside a
+`.category-badge--<colour>` circle by `TicketRow`, `CategoryRow` and the icon choices in
+`AddCategoryModal`; `ArrowLeftIcon` is not rendered yet.
 
 ```mermaid
 flowchart TD
@@ -359,8 +398,7 @@ flowchart TD
     KeyNumbers["KeyNumbers<br/>4 cards, nothing to click"]:::component
     Toolbar["Toolbar"]:::component
     TicketList["TicketList"]:::component
-    TicketRow["TicketRow ×n"]:::component
-    CategoryBadge["CategoryBadge<br/>(in TicketRow.tsx)"]:::component
+    TicketRow["TicketRow ×n<br/>category badge inline"]:::component
     StatusBadge["StatusBadge"]:::component
     TicketDetail["TicketDetail"]:::component
     AttachmentList["AttachmentList"]:::component
@@ -373,7 +411,6 @@ flowchart TD
     Inbox --> KeyNumbers
     Inbox --> Toolbar
     Inbox --> TicketList --> TicketRow
-    TicketRow --> CategoryBadge
     TicketRow --> StatusBadge
     Inbox --> TicketDetail
     TicketDetail --> AttachmentList
@@ -382,9 +419,19 @@ flowchart TD
     TicketDetail --> ReplyActions
   end
 
+  subgraph SettingsPage["/settings"]
+    Settings["SettingsPage<br/>app/(admin)/settings/page.tsx"]:::page
+    CategorySettings["CategorySettings<br/>client component"]:::component
+    CategoryRow["CategoryRow ×n<br/>badge, name, switch"]:::component
+    AddCategoryModal["AddCategoryModal<br/>native dialog, only while open"]:::component
+
+    Settings --> CategorySettings
+    CategorySettings --> CategoryRow
+    CategorySettings --> AddCategoryModal
+  end
+
   subgraph Placeholders["Pages with no components of their own"]
     Platform["/platforms/[platform]"]:::page
-    Settings["/settings"]:::page
   end
 
   subgraph NoMenu["Outside (admin): RootLayout only"]
@@ -396,6 +443,7 @@ flowchart TD
   NotFound["not-found<br/>with or without the menu"]:::page
 
   AppShell -- "children (main)" --> Home
+  AppShell -- "children (main)" --> SettingsPage
   AppShell -- "children (main)" --> Placeholders
   AppShell -. "children (main), for notFound() in (admin)" .-> NotFound
   NoMenu ~~~ NotFound
@@ -410,11 +458,14 @@ flowchart TD
 `SideMenu` renders itself up to three times: `AdminLayout` wraps it in `<Suspense>` because
 `usePathname` can suspend on unknown platform URLs, so the fallback is the same menu with nothing
 highlighted, and the real one hands off to `SideMenuAtCurrentUrl`, which reads the URL and renders
-`SideMenu` again with `activeHref` set. The inbox is the only page with real UI; `Inbox` reads and changes
-tickets through the store and keeps its own view state, while its children get props only
+`SideMenu` again with `activeHref` set. `Inbox` reads and changes tickets through the store and
+keeps its own view state, while its children get props only
 (`KeyNumbers` is a plain list of four cards above the toolbar, with no buttons or links), and
 both `ReplySection` and `ReplyActions` are exported from the same file,
-`components/inbox/ReplySection/ReplySection.tsx`. The placeholder pages and the not-found page
+`components/inbox/ReplySection/ReplySection.tsx`. On `/settings`, `CategorySettings` reads the
+category store and renders one `CategoryRow` per category in a loop; `AddCategoryModal` is
+mounted only while the dialog is open, so each opening starts empty. Both sub-components get
+props only. The platform placeholder page and the not-found page
 render only HTML and `next/link`; the not-found page renders inside `AppShell` for an unknown
 platform and under `RootLayout` alone for any other unknown URL (see section 1, Level 4).
 
@@ -429,12 +480,18 @@ flowchart TD
   Sample[/"Sample data<br/>(stand-in for the database)"/]:::mock
   Frame["Admin frame"]:::layout
   Memory[("Shared feedback memory")]:::store
+  CategoryMemory[("Shared category memory")]:::store
   Menu["Menu"]:::component
   Inbox["Inbox"]:::component
   KeyNums["Key numbers"]:::component
+  Settings["Settings"]:::component
 
   Sample -- "workspace and user" --> Frame
   Sample -- "feedback" --> Memory
+  Sample -- "categories" --> CategoryMemory
+  CategoryMemory -- "categories" --> Settings
+  CategoryMemory -- "names, icons, colours" --> Inbox
+  Settings -. "added, switched on/off" .-> CategoryMemory
   Frame -- "workspace and user" --> Menu
   Memory -- "number of new feedback" --> Menu
   Memory -- "feedback" --> Inbox
@@ -449,7 +506,9 @@ flowchart TD
 ```
 
 All feedback lives in one shared memory filled from sample data, so when the inbox changes a
-feedback, the menu's count of new feedback and the inbox's key numbers update at once.
+feedback, the menu's count of new feedback and the inbox's key numbers update at once. Categories
+live in a second shared memory: a category added in settings shows up in the inbox's category
+filter straight away.
 
 <details>
 <summary>Level 2</summary>
@@ -458,7 +517,10 @@ feedback, the menu's count of new feedback and the inbox's key numbers update at
 flowchart TD
   MockWorkspace[/"mockWorkspace, mockUser"/]:::mock
   MockFeedback[/"mockFeedback"/]:::mock
+  MockCategories[/"mockCategories"/]:::mock
   Store[("useTicketsStore")]:::store
+  CategoryStore[("useCategoriesStore")]:::store
+  CategorySettings["CategorySettings"]:::component
   AdminLayout["AdminLayout"]:::layout
   AppShell["AppShell"]:::component
   SideMenu["SideMenu"]:::component
@@ -475,6 +537,11 @@ flowchart TD
   Inbox -- "props" --> KeyNumbers
   Inbox -. "zustand" .-> Store
   ResetTickets -. "zustand" .-> Store
+  MockCategories -- "mock" --> CategoryStore
+  CategoryStore -- "zustand" --> CategorySettings
+  CategoryStore -- "zustand" --> Inbox
+  CategorySettings -. "zustand" .-> CategoryStore
+  ResetTickets -. "zustand" .-> CategoryStore
 
   classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
   classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
@@ -492,12 +559,18 @@ flowchart TD
 flowchart TD
   MockWorkspace[/"lib/mock-workspace.ts"/]:::mock
   MockFeedback[/"lib/mock-feedback.ts"/]:::mock
+  MockCategories[/"lib/mock-categories.ts"/]:::mock
   Store[("useTicketsStore")]:::store
+  CategoryStore[("useCategoriesStore")]:::store
 
   AdminLayout["AdminLayout"]:::layout
   AppShell["AppShell"]:::component
   TopBar["TopBar"]:::component
   SideMenu["SideMenu"]:::component
+
+  CategorySettings["CategorySettings<br/>dialog open: useState"]:::component
+  CategoryRow["CategoryRow"]:::component
+  AddCategoryModal["AddCategoryModal<br/>draft: useState"]:::component
 
   Inbox["Inbox<br/>view state: useReducer"]:::component
   SearchBar["SearchBar"]:::component
@@ -521,6 +594,17 @@ flowchart TD
   Inbox -- "props: selected ticket" --> TicketDetail
   Inbox -. "zustand: useTicketsStore" .-> Store
   ResetTickets -. "zustand: useTicketsStore" .-> Store
+  MockCategories -- "mock: lib/mock-categories.ts" --> CategoryStore
+  CategoryStore -- "zustand: useCategoriesStore" --> CategorySettings
+  CategoryStore -- "zustand: useCategoriesStore" --> Inbox
+  Inbox -- "props: categories" --> Toolbar
+  Inbox -- "props: categories" --> TicketList
+  CategorySettings -- "props: category" --> CategoryRow
+  CategorySettings -- "props: categories" --> AddCategoryModal
+  CategoryRow -. "props: onToggle" .-> CategorySettings
+  AddCategoryModal -. "props: onAdd, onClose" .-> CategorySettings
+  CategorySettings -. "zustand: useCategoriesStore" .-> CategoryStore
+  ResetTickets -. "zustand: useCategoriesStore" .-> CategoryStore
 
   classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
   classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
@@ -539,6 +623,11 @@ flowchart TD
   MockWorkspace[/"lib/mock-workspace.ts<br/>mockWorkspace, mockUser"/]:::mock
   MockFeedback[/"lib/mock-feedback.ts<br/>mockFeedback"/]:::mock
   Store[("useTicketsStore<br/>lib/tickets/store.ts<br/>{ tickets }")]:::store
+  MockCategories[/"lib/mock-categories.ts<br/>mockCategories"/]:::mock
+  CategoryStore[("useCategoriesStore<br/>lib/categories/store.ts<br/>{ categories }")]:::store
+  CategorySettings["CategorySettings"]:::component
+  CategoryRow["CategoryRow"]:::component
+  AddCategoryModal["AddCategoryModal"]:::component
 
   AdminLayout["AdminLayout"]:::layout
   AppShell["AppShell"]:::component
@@ -573,12 +662,22 @@ flowchart TD
   Inbox -- "props: numbers<br/>getKeyNumbers(tickets, now)" --> KeyNumbers
   Inbox -- "props: filters, sortOrder, counts" --> Toolbar
   Inbox -- "props: visible tickets, selectedId, now" --> TicketList
-  TicketList -- "props: ticket, isSelected, now" --> TicketRow
-  Inbox -- "props: selected ticket, replyDraft, notice" --> TicketDetail
+  TicketList -- "props: ticket, category, isSelected, now" --> TicketRow
+  Inbox -- "props: selected ticket, its category, replyDraft, notice" --> TicketDetail
   TicketDetail -- "props: ticket fields" --> Sections
 
   Inbox -. "zustand: useTicketsStore<br/>markRead, sendReply (sets completedAt), createIssue" .-> Store
   ResetTickets -. "zustand: useTicketsStore<br/>resetTickets" .-> Store
+
+  MockCategories -- "mock: lib/mock-categories.ts<br/>initial state" --> CategoryStore
+  CategoryStore -- "zustand: useCategoriesStore<br/>categories" --> CategorySettings
+  CategoryStore -- "zustand: useCategoriesStore<br/>categories → filter options, badges" --> Inbox
+  Inbox -- "props: categories" --> Toolbar
+  Inbox -- "props: categories" --> TicketList
+  CategorySettings -- "props: category, onToggle" --> CategoryRow
+  CategorySettings -- "props: categories, onAdd, onClose" --> AddCategoryModal
+  CategorySettings -. "zustand: useCategoriesStore<br/>addCategory, toggleCategory" .-> CategoryStore
+  ResetTickets -. "zustand: useCategoriesStore<br/>resetCategories" .-> CategoryStore
 
   classDef page fill:#DBEAFE,stroke:#1D4ED8,color:#1E3A8A
   classDef layout fill:#EDE9FE,stroke:#6D28D9,color:#4C1D95
@@ -587,8 +686,9 @@ flowchart TD
   classDef mock fill:#F3F4F6,stroke:#4B5563,color:#1F2937,stroke-dasharray:4 3
 ```
 
-There are two data sources: `AdminLayout` is the only reader of the workspace and user mock and
-passes them down as props, while ticket data lives in one Zustand store, `useTicketsStore`, which
+There are three data sources: `AdminLayout` is the only reader of the workspace and user mock and
+passes them down as props, categories live in their own Zustand store, and ticket data lives in
+one Zustand store, `useTicketsStore`, which
 is seeded from `mockFeedback` and read by both the side menu (unread counts) and the inbox, so
 opening a ticket updates the menu count at once. All ticket changes go through the store's action
 functions (`markRead`, `sendReply`, `createIssue`, `resetTickets`), which run the pure
@@ -600,6 +700,14 @@ current time (`useNow`), never from the filtered list, so search and filters do 
 reply draft and the notice are local `useReducer` state in `Inbox` (`lib/inbox/state.ts`), flow
 down as props, and reset when the page is hidden; the highlighted menu item comes from the URL
 (`usePathname`), not from any store.
+
+Categories (spec 006) live in `useCategoriesStore`, seeded from `mockCategories`. A ticket's
+`category` is a category `_id`; `Inbox` reads the store and passes the categories to `Toolbar`
+(filter options, every category, on or off) and to `TicketList`/`TicketRow` and `TicketDetail`
+(name, icon, colour). `CategorySettings` changes them through `addCategory` and `toggleCategory`,
+which run the pure `categoriesReducer` (`lib/categories/state.ts`); `validateCategoryName` there
+refuses blank and duplicate names. The on/off switch only records whether the future AI may use a
+category; the inbox ignores it. `ResetTickets` on `/logged-out` resets both stores.
 
 Unclear in the code:
 
